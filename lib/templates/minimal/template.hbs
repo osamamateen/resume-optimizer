@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{contact.name}} — Resume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Inter:wght@400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      font-size: 10pt;
+      color: #333;
+      background: #ffffff;
+      width: 794px;
+      margin: 0 auto;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    .page {
+      padding: 56px 64px 64px 64px;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    header h1 {
+      font-family: 'EB Garamond', serif;
+      font-size: 26pt;
+      font-weight: 400;
+      color: #000;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .contact-line {
+      font-family: 'Inter', sans-serif;
+      font-size: 9pt;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .contact-line a {
+      color: #555;
+      text-decoration: none;
+    }
+
+    /* ── Sections ── */
+    .section {
+      margin-top: 24px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 0 0 6px 0;
+    }
+
+    .section h2 {
+      font-family: 'EB Garamond', serif;
+      font-size: 12pt;
+      font-weight: 700;
+      color: #000;
+      text-align: center;
+      margin-bottom: 12px;
+      letter-spacing: 0.03em;
+    }
+
+    /* ── Summary ── */
+    .summary-text {
+      font-size: 10pt;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* ── Entries (experience, education, projects) ── */
+    .entry {
+      margin-bottom: 14px;
+    }
+
+    .entry:last-child {
+      margin-bottom: 0;
+    }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .entry-title {
+      font-size: 10pt;
+      font-weight: 400;
+      font-family: 'Inter', sans-serif;
+      color: #000;
+    }
+
+    .entry-date {
+      font-size: 9pt;
+      color: #555;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .entry-sub {
+      font-size: 9pt;
+      color: #555;
+      margin-top: 1px;
+      margin-bottom: 4px;
+    }
+
+    /* ── Bullets ── */
+    .bullets {
+      list-style: disc;
+      padding-left: 18px;
+      margin: 4px 0 0 0;
+    }
+
+    .bullets li {
+      font-size: 10pt;
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 2px;
+    }
+
+    /* ── Education ── */
+    .edu-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .edu-degree {
+      font-size: 10pt;
+      color: #000;
+      font-weight: 400;
+    }
+
+    .edu-date {
+      font-size: 9pt;
+      color: #555;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ── Skills ── */
+    .skills-group {
+      margin-bottom: 5px;
+      font-size: 10pt;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .skills-label {
+      font-weight: 400;
+      color: #000;
+    }
+
+    /* ── Projects ── */
+    .project-description {
+      font-size: 10pt;
+      color: #333;
+      margin-top: 2px;
+      margin-bottom: 4px;
+      line-height: 1.6;
+    }
+
+    .project-tech {
+      font-size: 9pt;
+      color: #555;
+      margin-top: 2px;
+      margin-bottom: 4px;
+    }
+
+    /* ── Custom Sections ── */
+    .custom-content {
+      font-size: 10pt;
+      color: #333;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ── Header ── -->
+    <header>
+      <h1>{{contact.name}}</h1>
+      <p class="contact-line">
+        {{contact.email}} | {{contact.phone}} | {{contact.location}}{{#ifExists contact.linkedin}} | <a href="{{contact.linkedin}}">{{contact.linkedin}}</a>{{/ifExists}}{{#ifExists contact.github}} | <a href="{{contact.github}}">{{contact.github}}</a>{{/ifExists}}{{#ifExists contact.website}} | <a href="{{contact.website}}">{{contact.website}}</a>{{/ifExists}}
+      </p>
+    </header>
+
+    <!-- ── Summary ── -->
+    {{#ifExists summary}}
+    <section class="section">
+      <hr class="section-divider">
+      <h2>Summary</h2>
+      <p class="summary-text">{{summary}}</p>
+    </section>
+    {{/ifExists}}
+
+    <!-- ── Experience ── -->
+    {{#ifExists experience}}
+    <section class="section">
+      <hr class="section-divider">
+      <h2>Experience</h2>
+      {{#each experience}}
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">{{this.title}}</span>
+          <span class="entry-date">{{formatDateRange this.startDate this.endDate}}</span>
+        </div>
+        <div class="entry-sub">{{this.company}}{{#ifExists this.location}}, {{this.location}}{{/ifExists}}</div>
+        {{#ifExists this.bullets}}
+        <ul class="bullets">
+          {{#each this.bullets}}
+          <li>{{this}}</li>
+          {{/each}}
+        </ul>
+        {{/ifExists}}
+      </div>
+      {{/each}}
+    </section>
+    {{/ifExists}}
+
+    <!-- ── Education ── -->
+    {{#ifExists education}}
+    <section class="section">
+      <hr class="section-divider">
+      <h2>Education</h2>
+      {{#each education}}
+      <div class="entry">
+        <div class="edu-header">
+          <span class="edu-degree">{{this.degree}}{{#ifExists this.field}} in {{this.field}}{{/ifExists}}</span>
+          <span class="edu-date">{{this.graduationDate}}</span>
+        </div>
+        <div class="entry-sub">{{this.institution}}</div>
+      </div>
+      {{/each}}
+    </section>
+    {{/ifExists}}
+
+    <!-- ── Projects ── -->
+    {{#ifExists projects}}
+    <section class="section">
+      <hr class="section-divider">
+      <h2>Projects</h2>
+      {{#each projects}}
+      <div class="entry">
+        <div class="entry-header">
+          <span class="entry-title">{{this.name}}</span>
+        </div>
+        {{#ifExists this.description}}
+        <p class="project-description">{{this.description}}</p>
+        {{/ifExists}}
+        {{#ifExists this.technologies}}
+        <p class="project-tech">{{joinArray this.technologies ", "}}</p>
+        {{/ifExists}}
+        {{#ifExists this.bullets}}
+        <ul class="bullets">
+          {{#each this.bullets}}
+          <li>{{this}}</li>
+          {{/each}}
+        </ul>
+        {{/ifExists}}
+      </div>
+      {{/each}}
+    </section>
+    {{/ifExists}}
+
+    <!-- ── Skills ── -->
+    {{#ifExists skills}}
+    <section class="section">
+      <hr class="section-divider">
+      <h2>Skills</h2>
+      {{#ifExists skills.languages}}
+      <div class="skills-group"><span class="skills-label">Languages:</span> {{joinArray skills.languages ", "}}</div>
+      {{/ifExists}}
+      {{#ifExists skills.frameworks}}
+      <div class="skills-group"><span class="skills-label">Frameworks:</span> {{joinArray skills.frameworks ", "}}</div>
+      {{/ifExists}}
+      {{#ifExists skills.tools}}
+      <div class="skills-group"><span class="skills-label">Tools:</span> {{joinArray skills.tools ", "}}</div>
+      {{/ifExists}}
+      {{#ifExists skills.other}}
+      <div class="skills-group"><span class="skills-label">Other:</span> {{joinArray skills.other ", "}}</div>
+      {{/ifExists}}
+    </section>
+    {{/ifExists}}
+
+    <!-- ── Custom Sections ── -->
+    {{#ifExists customSections}}
+    {{#each customSections}}
+    <section class="section">
+      <hr class="section-divider">
+      <h2>{{this.label}}</h2>
+      <p class="custom-content">{{this.content}}</p>
+    </section>
+    {{/each}}
+    {{/ifExists}}
+
+  </div>
+</body>
+</html>
