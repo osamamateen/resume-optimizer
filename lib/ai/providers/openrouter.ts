@@ -24,7 +24,7 @@ The JSON must match this exact structure:
   "atsScore": number (0-100),
   "matchedKeywords": ["string"],
   "missingKeywords": ["string"],
-  "summaryOfChanges": "string"
+  "summaryOfChanges": { "headline": "string", "bullets": ["string"] }
 }`;
 
 export class OpenRouterProvider implements AiProvider {

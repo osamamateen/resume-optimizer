@@ -12,7 +12,10 @@ export const optimizationResultSchema = z.object({
   atsScore: z.number().min(0).max(100),
   matchedKeywords: z.array(z.string()),
   missingKeywords: z.array(z.string()),
-  summaryOfChanges: z.string(),
+  summaryOfChanges: z.object({
+    headline: z.string(),
+    bullets: z.array(z.string()),
+  }),
 });
 export type OptimizationResult = z.infer<typeof optimizationResultSchema>;
 

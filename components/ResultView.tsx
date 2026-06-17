@@ -9,7 +9,7 @@ interface ResultViewProps {
   atsScore: number;
   matchedKeywords: string[];
   missingKeywords: string[];
-  summaryOfChanges: string;
+  summaryOfChanges: { headline: string; bullets: string[] };
   resumeData: ResumeData;
   onRestart: () => void;
 }
@@ -57,12 +57,12 @@ export function ResultView({
     <div className="space-y-6">
       {/* ATS score cards */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-gray-50 rounded-xl p-4">
+        {/* <div className="bg-gray-50 rounded-xl p-4">
           <p className="text-xs text-gray-400 mb-1">ATS alignment before</p>
           <p className="text-3xl font-medium text-gray-800">
             —<span className="text-sm text-gray-400 ml-1">/100</span>
           </p>
-        </div>
+        </div> */}
         <div className="bg-gray-50 rounded-xl p-4">
           <p className="text-xs text-gray-400 mb-1">ATS alignment after</p>
           <p className="text-3xl font-medium text-green-600">
@@ -96,9 +96,17 @@ export function ResultView({
       </div>
 
       {/* What changed */}
-      <div className="bg-gray-50 rounded-xl p-4">
-        <p className="text-[11px] uppercase tracking-widest text-gray-400 mb-2">What changed</p>
-        <p className="text-sm text-gray-500 leading-relaxed">{summaryOfChanges}</p>
+      <div className="bg-gray-50 rounded-xl p-4 space-y-3">
+        <p className="text-[11px] uppercase tracking-widest text-gray-400">What changed</p>
+        <p className="text-sm font-medium text-gray-800 leading-relaxed">{summaryOfChanges.headline}</p>
+        <ul className="space-y-1.5">
+          {summaryOfChanges.bullets.map((bullet, i) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-gray-500">
+              <span className="mt-1.5 w-1 h-1 rounded-full bg-blue-400 shrink-0" />
+              <span className="leading-relaxed">{bullet}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <hr className="border-gray-100" />

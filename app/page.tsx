@@ -14,7 +14,7 @@ interface OptimizeResponse {
   atsScore: number;
   matchedKeywords: string[];
   missingKeywords: string[];
-  summaryOfChanges: string;
+  summaryOfChanges: { headline: string; bullets: string[] };
   resumeData: ResumeData;
 }
 
