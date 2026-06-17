@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { IconDownload, IconRefresh } from "@tabler/icons-react";
 import type { ResumeData } from "@/types/resume.types";
 import { TemplateSelector } from "@/components/resume/TemplateSelector";
 
@@ -54,67 +55,93 @@ export function ResultView({
 
   return (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm text-gray-500">Estimated ATS match score (AI estimate, not a certified metric)</p>
-        <p className="text-3xl font-bold">{atsScore}/100</p>
+      {/* ATS score cards */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-gray-50 rounded-xl p-4">
+          <p className="text-xs text-gray-400 mb-1">ATS alignment before</p>
+          <p className="text-3xl font-medium text-gray-800">
+            —<span className="text-sm text-gray-400 ml-1">/100</span>
+          </p>
+        </div>
+        <div className="bg-gray-50 rounded-xl p-4">
+          <p className="text-xs text-gray-400 mb-1">ATS alignment after</p>
+          <p className="text-3xl font-medium text-green-600">
+            {atsScore}<span className="text-sm text-gray-400 ml-1">/100</span>
+          </p>
+        </div>
       </div>
 
+      {/* Keywords */}
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <p className="font-medium text-sm mb-1">Matched keywords</p>
-          <div className="flex flex-wrap gap-1">
-            {matchedKeywords.map((keyword) => (
-              <span key={keyword} className="rounded bg-green-100 text-green-800 px-2 py-0.5 text-xs">
-                {keyword}
+        <div className="bg-gray-50 rounded-xl p-4">
+          <p className="text-xs text-gray-400 mb-2">Matched keywords</p>
+          <div className="flex flex-wrap gap-1.5">
+            {matchedKeywords.map((kw) => (
+              <span key={kw} className="bg-green-50 text-green-800 text-xs px-2 py-0.5 rounded-full">
+                {kw}
               </span>
             ))}
           </div>
         </div>
-        <div>
-          <p className="font-medium text-sm mb-1">Missing keywords</p>
-          <div className="flex flex-wrap gap-1">
-            {missingKeywords.map((keyword) => (
-              <span key={keyword} className="rounded bg-red-100 text-red-800 px-2 py-0.5 text-xs">
-                {keyword}
+        <div className="bg-gray-50 rounded-xl p-4">
+          <p className="text-xs text-gray-400 mb-2">Missing keywords</p>
+          <div className="flex flex-wrap gap-1.5">
+            {missingKeywords.map((kw) => (
+              <span key={kw} className="bg-red-50 text-red-800 text-xs px-2 py-0.5 rounded-full">
+                {kw}
               </span>
             ))}
           </div>
         </div>
       </div>
 
-      <div>
-        <p className="font-medium text-sm mb-1">Summary of changes</p>
-        <p className="text-sm text-gray-700">{summaryOfChanges}</p>
+      {/* What changed */}
+      <div className="bg-gray-50 rounded-xl p-4">
+        <p className="text-[11px] uppercase tracking-widest text-gray-400 mb-2">What changed</p>
+        <p className="text-sm text-gray-500 leading-relaxed">{summaryOfChanges}</p>
       </div>
 
+      <hr className="border-gray-100" />
+
+      {/* Template selector */}
       <div>
-        <p className="font-medium text-sm mb-3">Choose a template</p>
+        <p className="text-[11px] uppercase tracking-widest text-gray-400 mb-3">Choose a template</p>
         <TemplateSelector selectedTemplateId={templateId} onSelect={setTemplateId} />
       </div>
 
+      {/* Action row */}
       <div className="flex flex-col gap-2">
         <button
           type="button"
           onClick={handleDownload}
           disabled={downloading}
-          className="rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50 flex items-center gap-2"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm text-white font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors"
         >
-          {downloading && (
-            <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
+          {downloading ? (
+            <>
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+              Generating PDF...
+            </>
+          ) : (
+            <>
+              <IconDownload size={16} /> Download PDF
+            </>
           )}
-          {downloading ? "Generating PDF..." : "Download PDF"}
         </button>
         {downloadError && (
           <p className="text-sm text-red-600">{downloadError}</p>
         )}
+        <button
+          type="button"
+          onClick={onRestart}
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+        >
+          <IconRefresh size={16} /> Start over
+        </button>
       </div>
-
-      <button type="button" onClick={onRestart} className="rounded border px-4 py-2">
-        Start over
-      </button>
     </div>
   );
 }
