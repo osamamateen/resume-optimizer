@@ -39,26 +39,20 @@ export async function POST(req: NextRequest) {
 
   const ai = getAiProvider();
   let result;
+  console.time("Optimizing resume with AI");
   try {
     result = await ai.optimizeResume({ sections, jobDescription });
   } catch (err) {
     console.error("AI optimization failed", err);
     return NextResponse.json({ error: "Resume optimization failed. Please try again." }, { status: 502 });
   }
-
-  let resumeData;
-  try {
-    resumeData = await ai.extractStructuredResume(result.sections);
-  } catch (err) {
-    console.error("Structured resume extraction failed", err);
-    return NextResponse.json({ error: "Failed to extract resume structure. Please try again." }, { status: 502 });
-  }
+  console.timeEnd("Optimizing resume with AI");
 
   return NextResponse.json({
     atsScore: result.atsScore,
     matchedKeywords: result.matchedKeywords,
     missingKeywords: result.missingKeywords,
     summaryOfChanges: result.summaryOfChanges,
-    resumeData,
+    resumeData: result.resumeData,
   });
 }
