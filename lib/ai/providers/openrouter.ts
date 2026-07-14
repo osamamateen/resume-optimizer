@@ -27,6 +27,8 @@ The JSON must match this exact structure:
   "summaryOfChanges": { "headline": "string", "bullets": ["string"] }
 }`;
 
+const rewriteResultSchema = optimizationResultSchema.omit({ resumeData: true });
+
 export class OpenRouterProvider implements AiProvider {
   private apiKey: string;
 
@@ -76,10 +78,13 @@ export class OpenRouterProvider implements AiProvider {
     const content = data.choices?.[0]?.message?.content;
     if (!content) throw new Error("OpenRouter returned an empty response");
 
-    return optimizationResultSchema.parse(JSON.parse(content));
+    const rewritten = rewriteResultSchema.parse(JSON.parse(content));
+    const resumeData = await this.extractStructuredResume(rewritten.sections);
+
+    return { ...rewritten, resumeData };
   }
 
-  async extractStructuredResume(
+  private async extractStructuredResume(
     optimizedSections: Array<{ id: string; optimizedText: string }>
   ): Promise<ResumeData> {
     const extractionSystemPrompt = `You are a resume parser. Extract structured information from the provided resume text segments and return it as JSON.
