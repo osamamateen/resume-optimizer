@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ResumeDataSchema } from "../../types/resume.types";
 
 export const sectionInputSchema = z.object({
   id: z.string(),
@@ -16,6 +17,7 @@ export const optimizationResultSchema = z.object({
     headline: z.string(),
     bullets: z.array(z.string()),
   }),
+  resumeData: ResumeDataSchema,
 });
 export type OptimizationResult = z.infer<typeof optimizationResultSchema>;
 
@@ -26,7 +28,4 @@ export interface OptimizeRequest {
 
 export interface AiProvider {
   optimizeResume(request: OptimizeRequest): Promise<OptimizationResult>;
-  extractStructuredResume(
-    optimizedSections: Array<{ id: string; optimizedText: string }>
-  ): Promise<import("../../types/resume.types").ResumeData>;
 }
