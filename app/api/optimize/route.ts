@@ -45,8 +45,9 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("AI optimization failed", err);
     return NextResponse.json({ error: "Resume optimization failed. Please try again." }, { status: 502 });
+  } finally {
+    console.timeEnd("Optimizing resume with AI");
   }
-  console.timeEnd("Optimizing resume with AI");
 
   return NextResponse.json({
     atsScore: result.atsScore,

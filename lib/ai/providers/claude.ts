@@ -64,13 +64,19 @@ export class ClaudeProvider implements AiProvider {
 
     const response = await this.client.messages.create({
       model: MODEL,
-      max_tokens: 12000,
+      max_tokens: 16000,
       system: SYSTEM_PROMPT,
       output_config: {
         format: { type: "json_schema", schema: buildOutputSchema() },
       },
       messages: [{ role: "user", content: userContent }],
     });
+
+    if (response.stop_reason === "max_tokens") {
+      throw new Error(
+        "Claude's response was truncated (hit max_tokens) before completing the optimization result"
+      );
+    }
 
     const textBlock = response.content.find((block) => block.type === "text");
     if (!textBlock || textBlock.type !== "text") {
