@@ -64,31 +64,31 @@ export function ResultView({
             —<span className="text-sm text-gray-400 ml-1">/100</span>
           </p>
         </div> */}
-        <div className="bg-gray-50 rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-1">ATS alignment after</p>
-          <p className="text-3xl font-medium text-green-600">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">ATS alignment after</p>
+          <p className="text-2xl sm:text-3xl font-medium text-green-600">
             {atsScore}<span className="text-sm text-gray-400 ml-1">/100</span>
           </p>
         </div>
       </div>
 
       {/* Keywords */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gray-50 rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-2">Matched keywords</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Matched keywords</p>
           <div className="flex flex-wrap gap-1.5">
             {matchedKeywords.map((kw) => (
-              <span key={kw} className="bg-green-50 text-green-800 text-xs px-2 py-0.5 rounded-full">
+              <span key={kw} className="bg-green-50 dark:bg-green-950 text-green-800 dark:text-green-300 text-xs px-2 py-0.5 rounded-full">
                 {kw}
               </span>
             ))}
           </div>
         </div>
-        <div className="bg-gray-50 rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-2">Missing keywords</p>
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Missing keywords</p>
           <div className="flex flex-wrap gap-1.5">
             {missingKeywords.map((kw) => (
-              <span key={kw} className="bg-red-50 text-red-800 text-xs px-2 py-0.5 rounded-full">
+              <span key={kw} className="bg-red-50 dark:bg-red-950 text-red-800 dark:text-red-300 text-xs px-2 py-0.5 rounded-full">
                 {kw}
               </span>
             ))}
@@ -97,12 +97,12 @@ export function ResultView({
       </div>
 
       {/* What changed */}
-      <div className="bg-gray-50 rounded-xl p-4 space-y-3">
-        <p className="text-[11px] uppercase tracking-widest text-gray-400">What changed</p>
-        <p className="text-sm font-medium text-gray-800 leading-relaxed">{summaryOfChanges.headline}</p>
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4 space-y-3">
+        <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500">What changed</p>
+        <p className="text-sm font-medium text-gray-800 dark:text-white leading-relaxed">{summaryOfChanges.headline}</p>
         <ul className="space-y-1.5">
           {summaryOfChanges.bullets.map((bullet, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-gray-500">
+            <li key={i} className="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400">
               <span className="mt-1.5 w-1 h-1 rounded-full bg-blue-400 shrink-0" />
               <span className="leading-relaxed">{bullet}</span>
             </li>
@@ -110,11 +110,11 @@ export function ResultView({
         </ul>
       </div>
 
-      <hr className="border-gray-100" />
+      <hr className="border-gray-100 dark:border-gray-800" />
 
       {/* Template selector */}
       <div>
-        <p className="text-[11px] uppercase tracking-widest text-gray-400 mb-3">Choose a template</p>
+        <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3">Choose a template</p>
         <TemplateSelector selectedTemplateId={templateId} onSelect={setTemplateId} />
       </div>
 
@@ -124,7 +124,7 @@ export function ResultView({
           type="button"
           onClick={handleDownload}
           disabled={downloading}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm text-white font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm text-white font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors min-h-[44px]"
         >
           {downloading ? (
             <>
@@ -146,7 +146,7 @@ export function ResultView({
         <button
           type="button"
           onClick={onRestart}
-          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-[44px]"
         >
           <IconRefresh size={16} /> Start over
         </button>

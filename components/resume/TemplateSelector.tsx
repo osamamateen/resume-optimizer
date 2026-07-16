@@ -123,7 +123,7 @@ export function TemplateSelector({ selectedTemplateId, onSelect }: TemplateSelec
   }, []);
 
   if (loading) {
-    return <p className="text-sm text-gray-500">Loading templates...</p>;
+    return <p className="text-sm text-gray-500 dark:text-gray-400">Loading templates...</p>;
   }
 
   return (
@@ -143,10 +143,10 @@ export function TemplateSelector({ selectedTemplateId, onSelect }: TemplateSelec
                 onSelect(template.id);
               }
             }}
-            className={`relative cursor-pointer rounded-xl p-3 hover:shadow-sm transition-all ${
+            className={`relative cursor-pointer rounded-xl p-2 sm:p-3 hover:shadow-sm transition-all ${
               isSelected
                 ? "border-2 border-blue-600"
-                : "border border-gray-200"
+                : "border border-gray-200 dark:border-gray-700"
             }`}
           >
             {isSelected && (
@@ -154,11 +154,11 @@ export function TemplateSelector({ selectedTemplateId, onSelect }: TemplateSelec
                 <IconCheck size={10} className="text-white" />
               </div>
             )}
-            <div className="h-28 rounded-lg overflow-hidden border border-gray-100 mb-3 bg-white">
+            <div className="h-20 sm:h-28 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 mb-3 bg-white dark:bg-gray-800">
               {Preview ? <Preview /> : null}
             </div>
-            <p className="text-sm font-medium text-gray-900">{template.name}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{template.description}</p>
+            <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">{template.name}</p>
+            <p className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 mt-0.5">{template.description}</p>
           </div>
         );
       })}

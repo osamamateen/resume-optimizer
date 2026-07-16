@@ -9,6 +9,7 @@ import { ResultView } from "@/components/ResultView";
 import { LoadingView } from "@/components/LoadingView";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import type { ResumeData } from "@/types/resume.types";
 
 type Step = "upload" | "jobDescription" | "result";
@@ -40,7 +41,7 @@ function Stepper({ currentStep }: { currentStep: Step }) {
         const active = i === current;
         return (
           <div key={step.key} className="flex items-center gap-2">
-            {i > 0 && <div className="w-6 h-px bg-gray-200" />}
+            {i > 0 && <div className="w-6 h-px bg-gray-200 dark:bg-gray-700" />}
             <div className="flex items-center gap-1.5">
               <div
                 className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
@@ -48,7 +49,7 @@ function Stepper({ currentStep }: { currentStep: Step }) {
                     ? "bg-green-500 text-white"
                     : active
                     ? "bg-blue-600 text-white"
-                    : "border border-gray-300 text-gray-400"
+                    : "border border-gray-300 dark:border-gray-700 text-gray-400 dark:text-gray-600"
                 }`}
               >
                 {done ? (
@@ -58,8 +59,8 @@ function Stepper({ currentStep }: { currentStep: Step }) {
                 )}
               </div>
               <span
-                className={`text-sm whitespace-nowrap ${
-                  active ? "text-blue-600 font-medium" : "text-gray-400"
+                className={`hidden md:inline text-sm whitespace-nowrap ${
+                  active ? "text-blue-600 font-medium" : "text-gray-400 dark:text-gray-600"
                 }`}
               >
                 {step.label}
@@ -125,10 +126,10 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-6 h-14 flex items-center justify-between">
-          <span className="font-medium text-gray-900">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
+      <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <span className="font-medium text-gray-900 dark:text-white">
             Resume<span className="text-blue-600">Tailor</span>
           </span>
           <div className="flex items-center gap-4">
@@ -140,13 +141,17 @@ export default function Home() {
             >
               Log out
             </button>
+            <ThemeToggle />
           </div>
+          {/* <div className="flex-1 flex justify-center md:flex-none">
+          </div> */}
+          {/* <Stepper currentStep={step} /> */}
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-6 py-10">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
         {error && (
-          <p className="mb-6 rounded-lg bg-red-50 border border-red-100 p-3 text-sm text-red-700">
+          <p className="mb-6 rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 p-3 text-sm text-red-700 dark:text-red-300">
             {error}
           </p>
         )}

@@ -69,6 +69,13 @@ Copy `.env.local` and fill in real values:
 - `UploadStep` — dropzone for the file and mode selector (in-place vs template).
 - `JobDescriptionStep` — textarea for the job posting.
 - `ResultView` — shows ATS score, keyword lists, change summary, and download buttons.
+- `LoadingView` — animated progress bar (caps at 88%) with cycling status messages shown during the `/api/optimize` call.
+- `resume/TemplateSelector` — two-column grid picker for output template style (modern, minimal); fetches options from `GET /api/templates`.
+
+**API routes** (`app/api/`)
+- `POST /api/optimize` — main resume optimization endpoint (see request flow above).
+- `GET /api/templates` — returns available template options from `lib/templates/registry`.
+- `POST /api/resume/render` — accepts `{ resumeData, templateId }`, validates with `ResumeDataSchema`, and returns a rendered PDF via `lib/services/pdf-renderer.service`.
 
 ### Authentication
 

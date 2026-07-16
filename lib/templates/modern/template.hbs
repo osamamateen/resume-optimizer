@@ -1,331 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{contact.name}} — Resume</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8">
+<title>{{contact.name}} - Resume</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      font-size: 10pt;
-      color: #1a1a1a;
-      background: #ffffff;
-      width: 794px;
-      margin: 0 auto;
-      padding: 0;
-      line-height: 1.5;
-    }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #1a1a1a;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
 
-    /* Decorative accent bar — purely visual, contains no text */
-    .accent-bar {
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 4px;
-      background: #2563EB;
-    }
+  .page {
+    max-width: 850px;
+    margin: 0 auto;
+    padding: 55px 60px 60px 60px;
+  }
 
-    .page {
-      padding: 40px 48px 48px 52px;
-    }
+  /* Header */
+  .name {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #111;
+  }
 
-    /* ── Header ── */
-    header {
-      margin-bottom: 20px;
-    }
+  .contact-line {
+    font-size: 12.5px;
+    color: #1a1a1a;
+    margin-top: 6px;
+    margin-bottom: 4px;
+  }
 
-    header h1 {
-      font-size: 22pt;
-      font-weight: 700;
-      color: #1a1a1a;
-      line-height: 1.2;
-      margin-bottom: 6px;
-    }
+  /* Section */
+  .section {
+    margin-top: 22px;
+  }
 
-    .contact-line {
-      font-size: 9pt;
-      color: #6B7280;
-      line-height: 1.4;
-    }
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    border-bottom: 1.3px solid #1a1a1a;
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+  }
 
-    .contact-line a {
-      color: #6B7280;
-      text-decoration: none;
-    }
+  .summary-text {
+    font-size: 12.5px;
+    line-height: 1.55;
+    text-align: left;
+    color: #1a1a1a;
+  }
 
-    /* ── Sections ── */
-    .section {
-      margin-top: 20px;
-    }
+  /* Work experience / Projects */
+  .job, .project {
+    margin-bottom: 16px;
+  }
 
-    .section h2 {
-      font-size: 9pt;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #2563EB;
-      margin-bottom: 8px;
-    }
+  .job:last-child, .project:last-child {
+    margin-bottom: 0;
+  }
 
-    /* ── Summary ── */
-    .summary-text {
-      font-size: 10pt;
-      color: #1a1a1a;
-      line-height: 1.5;
-    }
+  .job-header, .project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
 
-    /* ── Entries (experience, education, projects) ── */
-    .entry {
-      margin-bottom: 12px;
-    }
+  .job-title, .project-title {
+    font-size: 13.5px;
+    font-weight: 700;
+  }
 
-    .entry:last-child {
-      margin-bottom: 0;
-    }
+  .job-dates {
+    font-size: 12.5px;
+    font-style: italic;
+    white-space: nowrap;
+  }
 
-    .entry-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 8px;
-    }
+  .job-company {
+    font-size: 12.5px;
+    font-style: italic;
+    margin-bottom: 6px;
+    margin-top: 1px;
+  }
 
-    .entry-title {
-      font-size: 10pt;
-      font-weight: 600;
-      color: #1a1a1a;
-    }
+  .project-tech {
+    font-size: 12.5px;
+    font-style: italic;
+    margin-bottom: 6px;
+    margin-top: 1px;
+  }
 
-    .entry-date {
-      font-size: 9pt;
-      color: #6B7280;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+  .project-description {
+    font-size: 12.5px;
+    line-height: 1.55;
+    margin-bottom: 6px;
+  }
 
-    .entry-sub {
-      font-size: 9pt;
-      color: #6B7280;
-      margin-top: 1px;
-      margin-bottom: 4px;
-    }
+  ul.bullets {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
 
-    /* ── Bullets ── */
-    .bullets {
-      list-style: none;
-      padding: 0;
-      margin: 4px 0 0 0;
-    }
+  ul.bullets li {
+    font-size: 12.5px;
+    line-height: 1.55;
+    padding-left: 16px;
+    position: relative;
+    margin-bottom: 3px;
+  }
 
-    .bullets li {
-      font-size: 10pt;
-      color: #1a1a1a;
-      line-height: 1.5;
-      padding-left: 14px;
-      position: relative;
-      margin-bottom: 2px;
-    }
+  ul.bullets li::before {
+    content: "•";
+    position: absolute;
+    left: 2px;
+    top: 0;
+  }
 
-    .dash {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
+  /* Skills */
+  .skills-line {
+    font-size: 12.5px;
+    line-height: 1.75;
+  }
 
-    /* ── Education ── */
-    .edu-degree {
-      font-size: 10pt;
-      font-weight: 600;
-      color: #1a1a1a;
-    }
+  .skills-line .label {
+    font-weight: 700;
+  }
 
-    .edu-date {
-      font-size: 9pt;
-      color: #6B7280;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+  /* Education */
+  .edu {
+    margin-bottom: 10px;
+  }
 
-    /* ── Skills ── */
-    .skills-group {
-      margin-bottom: 6px;
-    }
+  .edu:last-child {
+    margin-bottom: 0;
+  }
 
-    .skills-label {
-      font-size: 9pt;
-      font-weight: 600;
-      color: #6B7280;
-      margin-right: 6px;
-    }
+  .edu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
 
-    .skill-pill {
-      display: inline-block;
-      background: #EFF6FF;
-      color: #2563EB;
-      border-radius: 3px;
-      padding: 1px 6px;
-      font-size: 9pt;
-      margin: 2px 3px 2px 0;
-    }
+  .edu-degree {
+    font-size: 13.5px;
+    font-weight: 700;
+  }
 
-    /* ── Projects ── */
-    .project-tech {
-      font-size: 9pt;
-      color: #6B7280;
-      margin-top: 2px;
-      margin-bottom: 4px;
-    }
+  .edu-dates {
+    font-size: 12.5px;
+    font-style: italic;
+    white-space: nowrap;
+  }
 
-    .project-description {
-      font-size: 10pt;
-      color: #1a1a1a;
-      margin-top: 2px;
-      margin-bottom: 4px;
-      line-height: 1.5;
-    }
+  .edu-school {
+    font-size: 12.5px;
+    font-style: italic;
+    margin-top: 1px;
+  }
 
-    /* ── Custom Sections ── */
-    .custom-content {
-      font-size: 10pt;
-      color: #1a1a1a;
-      line-height: 1.5;
-    }
-  </style>
+  /* Custom sections */
+  .custom-content {
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+</style>
 </head>
 <body>
-  <div class="accent-bar"></div>
+<div class="page">
 
-  <div class="page">
-
-    <!-- ── Header ── -->
-    <header>
-      <h1>{{contact.name}}</h1>
-      <p class="contact-line">
-        {{contact.email}}&nbsp;&middot;&nbsp;{{contact.phone}}&nbsp;&middot;&nbsp;{{contact.location}}{{#ifExists contact.linkedin}}&nbsp;&middot;&nbsp;<a href="{{contact.linkedin}}">{{contact.linkedin}}</a>{{/ifExists}}{{#ifExists contact.github}}&nbsp;&middot;&nbsp;<a href="{{contact.github}}">{{contact.github}}</a>{{/ifExists}}{{#ifExists contact.website}}&nbsp;&middot;&nbsp;<a href="{{contact.website}}">{{contact.website}}</a>{{/ifExists}}
-      </p>
-    </header>
-
-    <!-- ── Summary ── -->
-    {{#ifExists summary}}
-    <section class="section">
-      <h2>Summary</h2>
-      <p class="summary-text">{{summary}}</p>
-    </section>
-    {{/ifExists}}
-
-    <!-- ── Experience ── -->
-    {{#ifExists experience}}
-    <section class="section">
-      <h2>Experience</h2>
-      {{#each experience}}
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-title">{{this.title}}</span>
-          <span class="entry-date">{{formatDateRange this.startDate this.endDate}}</span>
-        </div>
-        <div class="entry-sub">{{this.company}}{{#ifExists this.location}}, {{this.location}}{{/ifExists}}</div>
-        {{#ifExists this.bullets}}
-        <ul class="bullets">
-          {{#each this.bullets}}
-          <li><span class="dash">&#8211;</span> {{this}}</li>
-          {{/each}}
-        </ul>
-        {{/ifExists}}
-      </div>
-      {{/each}}
-    </section>
-    {{/ifExists}}
-
-    <!-- ── Education ── -->
-    {{#ifExists education}}
-    <section class="section">
-      <h2>Education</h2>
-      {{#each education}}
-      <div class="entry">
-        <div class="entry-header">
-          <span class="edu-degree">{{this.degree}}{{#ifExists this.field}} in {{this.field}}{{/ifExists}}</span>
-          <span class="edu-date">{{this.graduationDate}}</span>
-        </div>
-        <div class="entry-sub">{{this.institution}}</div>
-      </div>
-      {{/each}}
-    </section>
-    {{/ifExists}}
-
-    <!-- ── Projects ── -->
-    {{#ifExists projects}}
-    <section class="section">
-      <h2>Projects</h2>
-      {{#each projects}}
-      <div class="entry">
-        <div class="entry-header">
-          <span class="entry-title">{{this.name}}</span>
-        </div>
-        {{#ifExists this.description}}
-        <p class="project-description">{{this.description}}</p>
-        {{/ifExists}}
-        {{#ifExists this.technologies}}
-        <p class="project-tech">{{joinArray this.technologies ", "}}</p>
-        {{/ifExists}}
-        {{#ifExists this.bullets}}
-        <ul class="bullets">
-          {{#each this.bullets}}
-          <li><span class="dash">&#8211;</span> {{this}}</li>
-          {{/each}}
-        </ul>
-        {{/ifExists}}
-      </div>
-      {{/each}}
-    </section>
-    {{/ifExists}}
-
-    <!-- ── Skills ── -->
-    {{#ifExists skills}}
-    <section class="section">
-      <h2>Skills</h2>
-      {{#ifExists skills.languages}}
-      <div class="skills-group">
-        <span class="skills-label">Languages:</span>{{#each skills.languages}}<span class="skill-pill">{{this}}</span>{{/each}}
-      </div>
-      {{/ifExists}}
-      {{#ifExists skills.frameworks}}
-      <div class="skills-group">
-        <span class="skills-label">Frameworks:</span>{{#each skills.frameworks}}<span class="skill-pill">{{this}}</span>{{/each}}
-      </div>
-      {{/ifExists}}
-      {{#ifExists skills.tools}}
-      <div class="skills-group">
-        <span class="skills-label">Tools:</span>{{#each skills.tools}}<span class="skill-pill">{{this}}</span>{{/each}}
-      </div>
-      {{/ifExists}}
-      {{#ifExists skills.other}}
-      <div class="skills-group">
-        <span class="skills-label">Other:</span>{{#each skills.other}}<span class="skill-pill">{{this}}</span>{{/each}}
-      </div>
-      {{/ifExists}}
-    </section>
-    {{/ifExists}}
-
-    <!-- ── Custom Sections ── -->
-    {{#ifExists customSections}}
-    {{#each customSections}}
-    <section class="section">
-      <h2>{{this.label}}</h2>
-      <p class="custom-content">{{this.content}}</p>
-    </section>
-    {{/each}}
-    {{/ifExists}}
-
+  <!-- Header -->
+  <div class="name">{{contact.name}}</div>
+  <div class="contact-line">
+    {{contact.email}} | {{contact.phone}} | {{contact.location}}{{#if contact.linkedin}} | {{contact.linkedin}}{{/if}}{{#if contact.github}} | {{contact.github}}{{/if}}{{#if contact.website}} | {{contact.website}}{{/if}}
   </div>
+
+  <!-- Summary -->
+  {{#if summary}}
+  <div class="section">
+    <div class="section-title">Summary</div>
+    <div class="summary-text">{{summary}}</div>
+  </div>
+  {{/if}}
+
+  <!-- Work Experience -->
+  {{#if experience.length}}
+  <div class="section">
+    <div class="section-title">Work Experience</div>
+
+    {{#each experience}}
+    <div class="job">
+      <div class="job-header">
+        <div class="job-title">{{this.title}}</div>
+        <div class="job-dates">{{this.startDate}} – {{this.endDate}}</div>
+      </div>
+      <div class="job-company">{{this.company}}{{#if this.location}} | {{this.location}}{{/if}}</div>
+      <ul class="bullets">
+        {{#each this.bullets}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  <!-- Projects -->
+  {{#if projects.length}}
+  <div class="section">
+    <div class="section-title">Projects</div>
+
+    {{#each projects}}
+    <div class="project">
+      <div class="project-header">
+        <div class="project-title">{{this.name}}</div>
+      </div>
+      {{#if this.technologies.length}}
+      <div class="project-tech">{{#each this.technologies}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+      {{/if}}
+      {{#if this.description}}
+      <div class="project-description">{{this.description}}</div>
+      {{/if}}
+      <ul class="bullets">
+        {{#each this.bullets}}
+        <li>{{this}}</li>
+        {{/each}}
+      </ul>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  <!-- Skills -->
+  {{#if skills}}
+  <div class="section">
+    <div class="section-title">Skills</div>
+    {{#if skills.languages.length}}
+    <div class="skills-line"><span class="label">Languages:</span> {{#each skills.languages}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+    {{/if}}
+    {{#if skills.frameworks.length}}
+    <div class="skills-line"><span class="label">Frameworks:</span> {{#each skills.frameworks}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+    {{/if}}
+    {{#if skills.tools.length}}
+    <div class="skills-line"><span class="label">Tools:</span> {{#each skills.tools}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+    {{/if}}
+    {{#if skills.other.length}}
+    <div class="skills-line"><span class="label">Other:</span> {{#each skills.other}}{{this}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  <!-- Education -->
+  {{#if education.length}}
+  <div class="section">
+    <div class="section-title">Education</div>
+    {{#each education}}
+    <div class="edu">
+      <div class="edu-header">
+        <div class="edu-degree">{{this.degree}}{{#if this.field}}, {{this.field}}{{/if}}</div>
+        <div class="edu-dates">{{this.graduationDate}}</div>
+      </div>
+      <div class="edu-school">{{this.institution}}</div>
+    </div>
+    {{/each}}
+  </div>
+  {{/if}}
+
+  <!-- Custom Sections -->
+  {{#if customSections.length}}
+  {{#each customSections}}
+  <div class="section">
+    <div class="section-title">{{this.label}}</div>
+    <div class="custom-content">{{this.content}}</div>
+  </div>
+  {{/each}}
+  {{/if}}
+
+</div>
 </body>
 </html>
