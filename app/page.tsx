@@ -74,7 +74,7 @@ function Stepper({ currentStep }: { currentStep: Step }) {
 
 export default function Home() {
   const router = useRouter();
-  const { accessToken, ready, logout } = useAuth();
+  const { accessToken, logout } = useAuth();
   const [step, setStep] = useState<Step>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
@@ -83,10 +83,10 @@ export default function Home() {
   const [result, setResult] = useState<OptimizeResponse | null>(null);
 
   useEffect(() => {
-    if (ready && !accessToken) {
+    if (!accessToken) {
       router.push("/login");
     }
-  }, [ready, accessToken, router]);
+  }, [accessToken, router]);
 
   async function handleSubmit() {
     if (!file) return;
@@ -120,7 +120,7 @@ export default function Home() {
     setError(null);
   }
 
-  if (!ready || !accessToken) {
+  if (!accessToken) {
     return null;
   }
 

@@ -1,12 +1,18 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import { type AuthTokens, readTokens, writeTokens, clearTokens } from "./tokenStorage";
+import { createContext, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
+import {
+  type AuthTokens,
+  getTokensSnapshot,
+  getServerTokensSnapshot,
+  subscribeTokens,
+  writeTokens,
+  clearTokens,
+} from "./tokenStorage";
 
 interface AuthContextValue {
   accessToken: string | null;
   refreshToken: string | null;
-  ready: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -28,38 +34,17 @@ async function postJson(url: string, body: unknown): Promise<AuthTokens> {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [ready, setReady] = useState(false);
+  const tokens = useSyncExternalStore(subscribeTokens, getTokensSnapshot, getServerTokensSnapshot);
+  const accessToken = tokens?.accessToken ?? null;
+  const refreshToken = tokens?.refreshToken ?? null;
 
-  useEffect(() => {
-    const stored = readTokens();
-    if (stored) {
-      setAccessToken(stored.accessToken);
-      setRefreshToken(stored.refreshToken);
-    }
-    setReady(true);
+  const login = useCallback(async (email: string, password: string) => {
+    writeTokens(await postJson("/api/auth/login", { email, password }));
   }, []);
 
-  const applyTokens = useCallback((tokens: AuthTokens) => {
-    setAccessToken(tokens.accessToken);
-    setRefreshToken(tokens.refreshToken);
-    writeTokens(tokens);
+  const signup = useCallback(async (email: string, password: string) => {
+    writeTokens(await postJson("/api/auth/signup", { email, password }));
   }, []);
-
-  const login = useCallback(
-    async (email: string, password: string) => {
-      applyTokens(await postJson("/api/auth/login", { email, password }));
-    },
-    [applyTokens]
-  );
-
-  const signup = useCallback(
-    async (email: string, password: string) => {
-      applyTokens(await postJson("/api/auth/signup", { email, password }));
-    },
-    [applyTokens]
-  );
 
   const logout = useCallback(async () => {
     if (refreshToken) {
@@ -69,13 +54,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify({ refreshToken }),
       }).catch(() => {});
     }
-    setAccessToken(null);
-    setRefreshToken(null);
     clearTokens();
   }, [refreshToken]);
 
   return (
-    <AuthContext.Provider value={{ accessToken, refreshToken, ready, login, signup, logout }}>
+    <AuthContext.Provider value={{ accessToken, refreshToken, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
