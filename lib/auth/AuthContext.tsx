@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useSyncExternalStore, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import {
   type AuthTokens,
   getTokensSnapshot,
@@ -13,6 +13,7 @@ import {
 interface AuthContextValue {
   accessToken: string | null;
   refreshToken: string | null;
+  ready: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -38,6 +39,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const accessToken = tokens?.accessToken ?? null;
   const refreshToken = tokens?.refreshToken ?? null;
 
+  // getServerTokensSnapshot() always returns null (no localStorage on the
+  // server), so the first client render matches SSR and briefly reports
+  // "logged out" even for a returning user. `ready` distinguishes that
+  // one-render hydration gap from an actual missing session, so callers
+  // (e.g. the redirect-to-login effect in app/page.tsx) don't act on it.
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    // One-time post-hydration mount flag; there's no external system to
+    // subscribe to here, just the SSR/client hydration boundary itself.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setReady(true);
+  }, []);
+
   const login = useCallback(async (email: string, password: string) => {
     writeTokens(await postJson("/api/auth/login", { email, password }));
   }, []);
@@ -58,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshToken]);
 
   return (
-    <AuthContext.Provider value={{ accessToken, refreshToken, login, signup, logout }}>
+    <AuthContext.Provider value={{ accessToken, refreshToken, ready, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
