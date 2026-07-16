@@ -4,6 +4,7 @@ import { useState } from "react";
 import { IconDownload, IconRefresh } from "@tabler/icons-react";
 import type { ResumeData } from "@/types/resume.types";
 import { TemplateSelector } from "@/components/resume/TemplateSelector";
+import { authFetch } from "@/lib/auth/authFetch";
 
 interface ResultViewProps {
   atsScore: number;
@@ -30,7 +31,7 @@ export function ResultView({
     setDownloading(true);
     setDownloadError(null);
     try {
-      const res = await fetch("/api/resume/render", {
+      const res = await authFetch("/api/resume/render", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resumeData, templateId }),

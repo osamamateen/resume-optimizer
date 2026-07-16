@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { IconCheck } from "@tabler/icons-react";
+import { authFetch } from "@/lib/auth/authFetch";
 
 interface TemplateOption {
   id: string;
@@ -108,7 +109,7 @@ export function TemplateSelector({ selectedTemplateId, onSelect }: TemplateSelec
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/templates")
+    authFetch("/api/templates")
       .then((res) => res.json())
       .then((data: TemplateOption[]) => {
         setTemplates(data);
