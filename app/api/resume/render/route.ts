@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ResumeDataSchema } from "@/types/resume.types";
 import { renderResumePDF } from "@/lib/services/pdf-renderer.service";
+import { requireAuth, UnauthorizedError } from "@/lib/auth/requireAuth";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
+  try {
+    await requireAuth(req);
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    throw err;
+  }
+
   let body: unknown;
   try {
     body = await req.json();

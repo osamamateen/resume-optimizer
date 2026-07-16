@@ -3,11 +3,21 @@ import { parseDocx } from "@/lib/parsing/docx";
 import { extractPdfText } from "@/lib/parsing/pdf";
 import { sectionsFromDocxSegments, sectionsFromPlainText } from "@/lib/parsing/extractSections";
 import { getAiProvider } from "@/lib/ai/provider";
+import { requireAuth, UnauthorizedError } from "@/lib/auth/requireAuth";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
 export async function POST(req: NextRequest) {
+  try {
+    await requireAuth(req);
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    throw err;
+  }
+
   const form = await req.formData();
   const file = form.get("resume");
   const jobDescription = form.get("jobDescription");
