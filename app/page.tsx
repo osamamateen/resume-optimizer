@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { IconCheck } from "@tabler/icons-react";
 import { UploadStep } from "@/components/UploadStep";
 import { JobDescriptionStep } from "@/components/JobDescriptionStep";
 import { ResultView } from "@/components/ResultView";
 import { LoadingView } from "@/components/LoadingView";
+import { useAuth } from "@/lib/auth/AuthContext";
+import { authFetch } from "@/lib/auth/authFetch";
 import type { ResumeData } from "@/types/resume.types";
 
 type Step = "upload" | "jobDescription" | "result";
@@ -70,12 +73,20 @@ function Stepper({ currentStep }: { currentStep: Step }) {
 }
 
 export default function Home() {
+  const router = useRouter();
+  const { accessToken, ready, logout } = useAuth();
   const [step, setStep] = useState<Step>("upload");
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OptimizeResponse | null>(null);
+
+  useEffect(() => {
+    if (ready && !accessToken) {
+      router.push("/login");
+    }
+  }, [ready, accessToken, router]);
 
   async function handleSubmit() {
     if (!file) return;
@@ -86,7 +97,7 @@ export default function Home() {
       formData.append("resume", file);
       formData.append("jobDescription", jobDescription);
 
-      const res = await fetch("/api/optimize", { method: "POST", body: formData });
+      const res = await authFetch("/api/optimize", { method: "POST", body: formData });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(typeof body.error === "string" ? body.error : "Optimization failed");
@@ -109,6 +120,10 @@ export default function Home() {
     setError(null);
   }
 
+  if (!ready || !accessToken) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
@@ -116,7 +131,16 @@ export default function Home() {
           <span className="font-medium text-gray-900">
             Resume<span className="text-blue-600">Tailor</span>
           </span>
-          <Stepper currentStep={step} />
+          <div className="flex items-center gap-4">
+            <Stepper currentStep={step} />
+            <button
+              type="button"
+              onClick={() => logout().then(() => router.push("/login"))}
+              className="text-sm text-gray-400 hover:text-gray-600"
+            >
+              Log out
+            </button>
+          </div>
         </div>
       </header>
 
