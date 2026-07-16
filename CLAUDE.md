@@ -32,6 +32,9 @@ Copy `.env.local` and fill in real values:
 | `CLAUDE_MODEL` | No | `claude-sonnet-4-6` | Model used by ClaudeProvider |
 | `OPENROUTER_API_KEY` | Yes (for OpenRouter) | — | OpenRouter API key |
 | `OPENROUTER_MODEL` | No | `meta-llama/llama-3.3-70b-instruct:free` | Model used by OpenRouterProvider |
+| `DATABASE_URL` | Yes | — | Postgres connection string (Prisma) |
+| `JWT_ACCESS_SECRET` | Yes | — | Signs/verifies access tokens |
+| `JWT_REFRESH_HASH_SECRET` | Yes | — | Pepper mixed into the refresh-token hash before storage |
 
 ## Architecture
 
@@ -66,6 +69,52 @@ Copy `.env.local` and fill in real values:
 - `UploadStep` — dropzone for the file and mode selector (in-place vs template).
 - `JobDescriptionStep` — textarea for the job posting.
 - `ResultView` — shows ATS score, keyword lists, change summary, and download buttons.
+
+### Authentication
+
+Every API route (`/api/optimize`, `/api/resume/render`, `/api/templates`)
+requires a valid access token, checked by `requireAuth()`
+(`lib/auth/requireAuth.ts`) as the first statement of each handler. A
+missing/invalid/expired token always returns
+`{ "error": "Unauthorized" }` with status 401, regardless of the specific
+reason.
+
+- `prisma/schema.prisma` — `User` (email + bcrypt password hash) and
+  `RefreshToken` (hashed, rotated, revocable) models, via `lib/prisma.ts`
+  (a `PrismaClient` singleton, to survive `next dev` hot reloads without
+  exhausting DB connections).
+- `lib/auth/passwords.ts` — bcrypt hash/verify.
+- `lib/auth/tokens.ts` — signs/verifies the access token: a `jose` JWT,
+  15 minute TTL, payload `{ sub: userId }`.
+- `lib/auth/refreshTokens.ts` — issues/rotates/revokes the refresh token:
+  an opaque random string, 7 day TTL, stored only as an HMAC hash
+  (`JWT_REFRESH_HASH_SECRET` pepper). Every use rotates it; reuse of an
+  already-rotated token revokes all of that user's refresh tokens
+  (theft/replay signal).
+- `app/api/auth/{signup,login,refresh,logout}/route.ts` — the public auth
+  endpoints.
+- `lib/auth/AuthContext.tsx` + `lib/auth/tokenStorage.ts` — client-side
+  auth state, persisted in `localStorage`.
+- `lib/auth/authFetch.ts` — `fetch` wrapper used everywhere the app calls
+  a protected API route; attaches the access token, and on a 401
+  transparently calls `/api/auth/refresh` and retries once before
+  redirecting to `/login`.
+- `app/page.tsx` redirects to `/login` when there's no session (checked
+  client-side via `AuthContext`, since tokens live in `localStorage`, not
+  cookies — there is no server-side session to check during SSR).
+
+**Prisma is pinned to `6.19.3`.** Prisma 7 removed `datasource.url`
+support in `schema.prisma` in favor of a `prisma.config.ts` +
+driver-adapter setup; this project still uses the classic
+`url = env("DATABASE_URL")` form, so don't bump `prisma`/`@prisma/client`
+past the 6.x line without migrating the config approach too.
+
+If the Postgres provider's direct connection host resolves to an
+IPv6-only address (true for new Supabase projects without the IPv4
+add-on) and the network can't route IPv6, use the provider's connection
+pooler instead. For Supabase specifically, use the **session pooler**
+(port 5432) for `DATABASE_URL` — the transaction-mode pooler (port 6543)
+doesn't support the advisory locks `prisma migrate` needs and will hang.
 
 ### `spike/` directory
 

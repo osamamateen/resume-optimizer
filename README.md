@@ -14,6 +14,15 @@ A Next.js app that tailors a resume to a specific job description using an LLM (
 
 See [CLAUDE.md](CLAUDE.md) for a detailed architecture breakdown.
 
+## Authentication
+
+Every API route requires a valid access token. Users sign up / log in with
+email and password (`/signup`, `/login`); the server returns a short-lived
+JWT access token plus a longer-lived opaque refresh token. The browser
+attaches the access token as `Authorization: Bearer <token>` on every API
+call and transparently refreshes it when it expires. See "Authentication"
+in [CLAUDE.md](CLAUDE.md) for details.
+
 ## Getting started
 
 ```bash
@@ -33,6 +42,9 @@ Open [http://localhost:3000](http://localhost:3000).
 | `CLAUDE_MODEL` | No | `claude-sonnet-4-6` | Model used by ClaudeProvider |
 | `OPENROUTER_API_KEY` | Yes (for OpenRouter) | — | OpenRouter API key |
 | `OPENROUTER_MODEL` | No | `meta-llama/llama-3.3-70b-instruct:free` | Model used by OpenRouterProvider |
+| `DATABASE_URL` | Yes | — | Postgres connection string (Prisma). Use a pooled connection if the direct host is IPv6-only on your network (e.g. Supabase's Session/Transaction pooler) |
+| `JWT_ACCESS_SECRET` | Yes | — | Signs/verifies access tokens |
+| `JWT_REFRESH_HASH_SECRET` | Yes | — | Pepper mixed into the refresh-token hash before storage |
 
 ## Scripts
 
