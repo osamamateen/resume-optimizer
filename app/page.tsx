@@ -2,86 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { IconCheck } from "@tabler/icons-react";
-import { UploadStep } from "@/components/UploadStep";
-import { JobDescriptionStep } from "@/components/JobDescriptionStep";
-import { ResultView } from "@/components/ResultView";
-import { LoadingView } from "@/components/LoadingView";
+import { IconPlus } from "@tabler/icons-react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import type { ResumeData } from "@/types/resume.types";
+import { MasterResumeControl } from "@/components/MasterResumeControl";
 
-type Step = "upload" | "jobDescription" | "result";
-
-interface OptimizeResponse {
+interface ApplicationSummary {
+  id: string;
+  companyName: string;
+  roleTitle: string;
   atsScore: number;
-  matchedKeywords: string[];
-  missingKeywords: string[];
-  summaryOfChanges: { headline: string; bullets: string[] };
-  resumeData: ResumeData;
-}
-
-const STEPS: { key: Step; label: string }[] = [
-  { key: "upload", label: "Upload" },
-  { key: "jobDescription", label: "Job description" },
-  { key: "result", label: "Results" },
-];
-
-function stepIndex(step: Step): number {
-  return STEPS.findIndex((s) => s.key === step);
-}
-
-function Stepper({ currentStep }: { currentStep: Step }) {
-  const current = stepIndex(currentStep);
-  return (
-    <div className="flex items-center gap-2">
-      {STEPS.map((step, i) => {
-        const done = i < current;
-        const active = i === current;
-        return (
-          <div key={step.key} className="flex items-center gap-2">
-            {i > 0 && <div className="w-6 h-px bg-gray-200 dark:bg-gray-700" />}
-            <div className="flex items-center gap-1.5">
-              <div
-                className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 ${
-                  done
-                    ? "bg-green-500 text-white"
-                    : active
-                    ? "bg-blue-600 text-white"
-                    : "border border-gray-300 dark:border-gray-700 text-gray-400 dark:text-gray-600"
-                }`}
-              >
-                {done ? (
-                  <IconCheck size={10} />
-                ) : (
-                  <span className="text-[10px] font-medium">{i + 1}</span>
-                )}
-              </div>
-              <span
-                className={`hidden md:inline text-sm whitespace-nowrap ${
-                  active ? "text-blue-600 font-medium" : "text-gray-400 dark:text-gray-600"
-                }`}
-              >
-                {step.label}
-              </span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+  createdAt: string;
 }
 
 export default function Home() {
   const router = useRouter();
   const { accessToken, ready, logout } = useAuth();
-  const [step, setStep] = useState<Step>("upload");
-  const [file, setFile] = useState<File | null>(null);
-  const [jobDescription, setJobDescription] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [applications, setApplications] = useState<ApplicationSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<OptimizeResponse | null>(null);
 
   useEffect(() => {
     if (ready && !accessToken) {
@@ -89,37 +28,16 @@ export default function Home() {
     }
   }, [ready, accessToken, router]);
 
-  async function handleSubmit() {
-    if (!file) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const formData = new FormData();
-      formData.append("resume", file);
-      formData.append("jobDescription", jobDescription);
-
-      const res = await authFetch("/api/optimize", { method: "POST", body: formData });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(typeof body.error === "string" ? body.error : "Optimization failed");
-      }
-      const data: OptimizeResponse = await res.json();
-      setResult(data);
-      setStep("result");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function handleRestart() {
-    setStep("upload");
-    setFile(null);
-    setJobDescription("");
-    setResult(null);
-    setError(null);
-  }
+  useEffect(() => {
+    if (!accessToken) return;
+    authFetch("/api/applications")
+      .then(async (res) => {
+        if (!res.ok) throw new Error("Failed to load applications");
+        const data = await res.json();
+        setApplications(data.applications);
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load applications"));
+  }, [accessToken]);
 
   if (!ready || !accessToken) {
     return null;
@@ -133,7 +51,6 @@ export default function Home() {
             Resume<span className="text-blue-600">Tailor</span>
           </span>
           <div className="flex items-center gap-4">
-            <Stepper currentStep={step} />
             <button
               type="button"
               onClick={() => logout().then(() => router.push("/login"))}
@@ -143,45 +60,56 @@ export default function Home() {
             </button>
             <ThemeToggle />
           </div>
-          {/* <div className="flex-1 flex justify-center md:flex-none">
-          </div> */}
-          {/* <Stepper currentStep={step} /> */}
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
         {error && (
-          <p className="mb-6 rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 p-3 text-sm text-red-700 dark:text-red-300">
+          <p className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 p-3 text-sm text-red-700 dark:text-red-300">
             {error}
           </p>
         )}
 
-        {step === "upload" && (
-          <UploadStep
-            file={file}
-            onFileChange={setFile}
-            onNext={() => setStep("jobDescription")}
-          />
+        <MasterResumeControl />
+
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Applications</p>
+          <button
+            type="button"
+            onClick={() => router.push("/applications/new")}
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white font-medium hover:bg-blue-700 transition-colors min-h-[44px]"
+          >
+            <IconPlus size={16} /> New application
+          </button>
+        </div>
+
+        {applications === null && <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>}
+
+        {applications !== null && applications.length === 0 && (
+          <p className="text-sm text-gray-400 dark:text-gray-500">No applications yet. Start by creating a new one.</p>
         )}
-        {loading && <LoadingView />}
-        {!loading && step === "jobDescription" && (
-          <JobDescriptionStep
-            jobDescription={jobDescription}
-            onChange={setJobDescription}
-            onBack={() => setStep("upload")}
-            onSubmit={handleSubmit}
-            loading={loading}
-          />
-        )}
-        {step === "result" && result && (
-          <ResultView
-            atsScore={result.atsScore}
-            matchedKeywords={result.matchedKeywords}
-            missingKeywords={result.missingKeywords}
-            summaryOfChanges={result.summaryOfChanges}
-            resumeData={result.resumeData}
-            onRestart={handleRestart}
-          />
+
+        {applications !== null && applications.length > 0 && (
+          <div className="space-y-2">
+            {applications.map((app) => (
+              <button
+                key={app.id}
+                type="button"
+                onClick={() => router.push(`/applications/${app.id}`)}
+                className="w-full text-left bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center justify-between hover:border-blue-500 transition-colors"
+              >
+                <div className="min-w-0">
+                  <p className="font-medium text-sm text-gray-900 dark:text-white truncate">
+                    {app.roleTitle} · {app.companyName}
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    {new Date(app.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <span className="text-sm font-medium text-green-600 shrink-0 ml-3">{app.atsScore}/100</span>
+              </button>
+            ))}
+          </div>
         )}
       </main>
     </div>
