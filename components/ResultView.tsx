@@ -12,6 +12,8 @@ interface ResultViewProps {
   missingKeywords: string[];
   summaryOfChanges: { headline: string; bullets: string[] };
   resumeData: ResumeData;
+  previousAtsScore: number;
+  previousMissingKeywords: string[];
   onRestart: () => void;
 }
 
@@ -21,11 +23,15 @@ export function ResultView({
   missingKeywords,
   summaryOfChanges,
   resumeData,
+  previousAtsScore,
+  previousMissingKeywords,
   onRestart,
 }: ResultViewProps) {
   const [templateId, setTemplateId] = useState("modern");
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  const keywordsAdded = matchedKeywords.filter((kw) => previousMissingKeywords.includes(kw));
 
   async function handleDownload() {
     setDownloading(true);
@@ -56,14 +62,14 @@ export function ResultView({
 
   return (
     <div className="space-y-6">
-      {/* ATS score cards */}
+      {/* ATS score comparison */}
       <div className="grid grid-cols-2 gap-3">
-        {/* <div className="bg-gray-50 rounded-xl p-4">
-          <p className="text-xs text-gray-400 mb-1">ATS alignment before</p>
-          <p className="text-3xl font-medium text-gray-800">
-            —<span className="text-sm text-gray-400 ml-1">/100</span>
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">ATS alignment before</p>
+          <p className="text-2xl sm:text-3xl font-medium text-gray-500 dark:text-gray-400">
+            {previousAtsScore}<span className="text-sm text-gray-400 ml-1">/100</span>
           </p>
-        </div> */}
+        </div>
         <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
           <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">ATS alignment after</p>
           <p className="text-2xl sm:text-3xl font-medium text-green-600">
@@ -75,9 +81,9 @@ export function ResultView({
       {/* Keywords */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Matched keywords</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Keywords added</p>
           <div className="flex flex-wrap gap-1.5">
-            {matchedKeywords.map((kw) => (
+            {keywordsAdded.map((kw) => (
               <span key={kw} className="bg-green-50 dark:bg-green-950 text-green-800 dark:text-green-300 text-xs px-2 py-0.5 rounded-full">
                 {kw}
               </span>
@@ -85,7 +91,7 @@ export function ResultView({
           </div>
         </div>
         <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Missing keywords</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Still missing</p>
           <div className="flex flex-wrap gap-1.5">
             {missingKeywords.map((kw) => (
               <span key={kw} className="bg-red-50 dark:bg-red-950 text-red-800 dark:text-red-300 text-xs px-2 py-0.5 rounded-full">

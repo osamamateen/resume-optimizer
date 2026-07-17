@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ResultView } from "@/components/ResultView";
+import { ScoringView } from "@/components/ScoringView";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -13,11 +14,15 @@ interface ApplicationDetail {
   companyName: string;
   roleTitle: string;
   jobDescription: string;
-  resumeData: ResumeData;
+  resumeData: ResumeData | null;
   atsScore: number;
   matchedKeywords: string[];
   missingKeywords: string[];
-  summaryOfChanges: { headline: string; bullets: string[] };
+  summaryOfChanges: { headline: string; bullets: string[] } | null;
+  originalAtsScore: number;
+  originalMatchedKeywords: string[];
+  originalMissingKeywords: string[];
+  suggestions: { headline: string; bullets: string[] };
 }
 
 export default function ApplicationDetailPage() {
@@ -27,6 +32,8 @@ export default function ApplicationDetailPage() {
   const [application, setApplication] = useState<ApplicationDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [optimizing, setOptimizing] = useState(false);
+  const [optimizeError, setOptimizeError] = useState<string | null>(null);
 
   useEffect(() => {
     if (ready && !accessToken) {
@@ -51,6 +58,27 @@ export default function ApplicationDetailPage() {
       router.push("/");
     } finally {
       setDeleting(false);
+    }
+  }
+
+  async function handleOptimize() {
+    setOptimizing(true);
+    setOptimizeError(null);
+    try {
+      const res = await authFetch("/api/optimize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationId: params.id }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(typeof body.error === "string" ? body.error : "Optimization failed");
+      }
+      setApplication(await res.json());
+    } catch (err) {
+      setOptimizeError(err instanceof Error ? err.message : "Something went wrong");
+    } finally {
+      setOptimizing(false);
     }
   }
 
@@ -95,14 +123,28 @@ export default function ApplicationDetailPage() {
               </button>
             </div>
 
-            <ResultView
-              atsScore={application.atsScore}
-              matchedKeywords={application.matchedKeywords}
-              missingKeywords={application.missingKeywords}
-              summaryOfChanges={application.summaryOfChanges}
-              resumeData={application.resumeData}
-              onRestart={() => router.push("/")}
-            />
+            {application.resumeData === null ? (
+              <ScoringView
+                atsScore={application.atsScore}
+                matchedKeywords={application.matchedKeywords}
+                missingKeywords={application.missingKeywords}
+                suggestions={application.suggestions}
+                onOptimize={handleOptimize}
+                optimizing={optimizing}
+                error={optimizeError}
+              />
+            ) : (
+              <ResultView
+                atsScore={application.atsScore}
+                matchedKeywords={application.matchedKeywords}
+                missingKeywords={application.missingKeywords}
+                summaryOfChanges={application.summaryOfChanges!}
+                resumeData={application.resumeData}
+                previousAtsScore={application.originalAtsScore}
+                previousMissingKeywords={application.originalMissingKeywords}
+                onRestart={() => router.push("/")}
+              />
+            )}
           </>
         )}
       </main>
