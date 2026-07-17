@@ -40,15 +40,30 @@ Copy `.env.local` and fill in real values:
 
 ### Request flow
 
-1. User uploads a `.docx` or `.pdf` resume and pastes a job description in the 3-step UI (`app/page.tsx`).
-2. The browser POSTs `multipart/form-data` to `POST /api/optimize` (`app/api/optimize/route.ts`).
-3. The route parses the file into `ResumeSection[]` (id + heading + originalText per segment).
-4. `getAiProvider()` (`lib/ai/provider.ts`) selects a provider based on `AI_PROVIDER` env var and calls `optimizeResume({ sections, jobDescription })`.
-5. The AI returns `optimizedText` for every section id, plus an ATS score and keyword lists.
-6. Depending on `mode`:
-   - **`in-place`** (DOCX only): the original XML AST is mutated and re-zipped.
-   - **`template`** (any format): a new PDF and DOCX are generated from scratch.
-7. The API returns base64-encoded file(s) plus score/keywords/summary; the browser decodes and offers downloads.
+1. Logging in lands on the applications dashboard (`app/page.tsx`),
+   listing the user's saved applications and showing their master resume
+   status (`components/MasterResumeControl.tsx`).
+2. "New application" starts a 3-step flow at `app/applications/new/page.tsx`:
+   company/role (`components/ApplicationDetailsStep.tsx`), resume source
+   — master resume reuse or a one-off override upload
+   (`components/ResumeSourceStep.tsx`) — then job description
+   (`components/JobDescriptionStep.tsx`, unchanged).
+3. The browser POSTs `multipart/form-data` to `POST /api/optimize`
+   (`app/api/optimize/route.ts`): `companyName`, `roleTitle`,
+   `jobDescription`, `useMaster`, and either `resume` (override upload)
+   or nothing (server loads the stored `MasterResume`).
+4. The route parses the resume into `ResumeSection[]`, calls
+   `getAiProvider().optimizeResume(...)`, and on success persists an
+   `Application` row (company/role/job description/`resumeData`/score/
+   keywords/summary — no file) before returning the result plus its new
+   `applicationId`.
+5. The browser redirects to `/applications/:id`
+   (`app/applications/[id]/page.tsx`), which fetches the saved record via
+   `GET /api/applications/:id` and renders it with the existing
+   `ResultView` component.
+6. Downloads are unchanged: `ResultView` posts `resumeData` +
+   `templateId` to `POST /api/resume/render`, which renders a PDF from
+   scratch every time — nothing is ever stored as rendered bytes.
 
 ### Key modules
 
@@ -66,7 +81,12 @@ Copy `.env.local` and fill in real values:
 - `docxTemplate.ts` — builds a document from scratch using the `docx` library with heading/paragraph hierarchy from `looksLikeHeading`.
 
 **UI components** (`components/`)
-- `UploadStep` — dropzone for the file and mode selector (in-place vs template).
+- `ApplicationDetailsStep` — company/role title inputs (first step of
+  the new-application flow).
+- `ResumeSourceStep` — choose the master resume or upload a one-off
+  override for a single application.
+- `MasterResumeControl` — dashboard widget showing/replacing the user's
+  master resume.
 - `JobDescriptionStep` — textarea for the job posting.
 - `ResultView` — shows ATS score, keyword lists, change summary, and download buttons.
 - `LoadingView` — animated progress bar (caps at 88%) with cycling status messages shown during the `/api/optimize` call.
@@ -122,6 +142,23 @@ add-on) and the network can't route IPv6, use the provider's connection
 pooler instead. For Supabase specifically, use the **session pooler**
 (port 5432) for `DATABASE_URL` — the transaction-mode pooler (port 6543)
 doesn't support the advisory locks `prisma migrate` needs and will hang.
+
+### Job applications and the master resume
+
+- `prisma/schema.prisma` — `MasterResume` (one per user, stores the
+  original uploaded file's bytes so it can be re-parsed for a future
+  application) and `Application` (company, role, job description, and
+  the AI's structured output — no file) models.
+- `app/api/master-resume/route.ts` — `GET` (metadata only) / `POST`
+  (upload or replace) the user's master resume.
+- `app/api/applications/route.ts`, `app/api/applications/[id]/route.ts`
+  — list / detail / delete a user's saved applications.
+- `lib/hooks/useMasterResume.ts` — shared client hook used by both the
+  dashboard's `MasterResumeControl` and the new-application flow's
+  `ResumeSourceStep` to know whether a master resume already exists.
+- Replacing the master resume never touches past `Application` rows —
+  each one already has its own frozen `resumeData` snapshot from when it
+  was created.
 
 ### `spike/` directory
 
