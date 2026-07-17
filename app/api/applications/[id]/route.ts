@@ -38,9 +38,15 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     atsScore: application.atsScore,
     matchedKeywords: application.matchedKeywords,
     missingKeywords: application.missingKeywords,
-    summaryOfChanges: {
-      headline: application.summaryHeadline,
-      bullets: application.summaryBullets,
+    summaryOfChanges: application.summaryHeadline
+      ? { headline: application.summaryHeadline, bullets: application.summaryBullets }
+      : null,
+    originalAtsScore: application.originalAtsScore,
+    originalMatchedKeywords: application.originalMatchedKeywords,
+    originalMissingKeywords: application.originalMissingKeywords,
+    suggestions: {
+      headline: application.suggestionsHeadline,
+      bullets: application.suggestionsBullets,
     },
     createdAt: application.createdAt,
   });
