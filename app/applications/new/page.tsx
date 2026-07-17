@@ -98,7 +98,7 @@ export default function NewApplicationPage() {
         formData.append("saveAsMaster", String(resumeSource.saveAsMaster));
       }
 
-      const res = await authFetch("/api/optimize", { method: "POST", body: formData });
+      const res = await authFetch("/api/score", { method: "POST", body: formData });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(typeof body.error === "string" ? body.error : "Optimization failed");
