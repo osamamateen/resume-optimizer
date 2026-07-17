@@ -79,7 +79,6 @@ model Application {
   missingKeywords  Json
   summaryHeadline  String
   summaryBullets   Json
-  templateId       String   @default("modern")
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
@@ -117,9 +116,9 @@ Key decisions:
   `{ id, companyName, roleTitle, atsScore, createdAt }[]`, ordered newest
   first.
 - **`GET /api/applications/:id`** — full record for the detail page
-  (`resumeData`, `jobDescription`, keywords, summary, `templateId`,
-  `companyName`, `roleTitle`). 404 (not 401/403) if the id belongs to
-  another user or doesn't exist.
+  (`resumeData`, `jobDescription`, keywords, summary, `companyName`,
+  `roleTitle`). 404 (not 401/403) if the id belongs to another user or
+  doesn't exist.
 - **`DELETE /api/applications/:id`** — hard delete; same ownership check
   as `GET`.
 - **`POST /api/optimize`** (modified) — new fields `companyName`,
