@@ -47,14 +47,27 @@ model Application {
   companyName     String
   roleTitle       String
   jobDescription  String
-  resumeData      Json
+
+  // Frozen snapshot from the scoring step — never overwritten.
+  originalSections        Json
+  originalAtsScore        Int
+  originalMatchedKeywords Json
+  originalMissingKeywords Json
+  suggestionsHeadline     String
+  suggestionsBullets      Json
+
+  // "Current" state: starts equal to the original values, overwritten once optimized.
   atsScore        Int
   matchedKeywords Json
   missingKeywords Json
-  summaryHeadline String
-  summaryBullets  Json
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+
+  // Only populated once Optimize has been run.
+  resumeData      Json?
+  summaryHeadline String?
+  summaryBullets  Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, createdAt])
 }
