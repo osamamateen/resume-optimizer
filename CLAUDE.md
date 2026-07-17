@@ -96,13 +96,14 @@ Copy `.env.local` and fill in real values:
 - `resume/TemplateSelector` — two-column grid picker for output template style (modern, minimal); fetches options from `GET /api/templates`.
 
 **API routes** (`app/api/`)
-- `POST /api/optimize` — main resume optimization endpoint (see request flow above).
+- `POST /api/score` — scores the original resume (no rewrite) and creates an `Application` in a "scored" state; takes `multipart/form-data` with company name, role, job description, and resume (file or master-resume flag). See "Job applications and the master resume" below.
+- `POST /api/optimize` — re-runs the rewrite against a previously-scored `Application` (JSON body `{ applicationId }`); updates the application's score/keywords/`resumeData`/summary without overwriting the original score/keywords. See "Job applications and the master resume" below.
 - `GET /api/templates` — returns available template options from `lib/templates/registry`.
 - `POST /api/resume/render` — accepts `{ resumeData, templateId }`, validates with `ResumeDataSchema`, and returns a rendered PDF via `lib/services/pdf-renderer.service`.
 
 ### Authentication
 
-Every API route (`/api/optimize`, `/api/resume/render`, `/api/templates`)
+Every API route (`/api/score`, `/api/optimize`, `/api/resume/render`, `/api/templates`)
 requires a valid access token, checked by `requireAuth()`
 (`lib/auth/requireAuth.ts`) as the first statement of each handler. A
 missing/invalid/expired token always returns
