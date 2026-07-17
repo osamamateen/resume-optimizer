@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
       companyName: companyName.trim(),
       roleTitle: roleTitle.trim(),
       jobDescription,
-      originalSections: sections,
+      originalSections: sections as unknown as any,
       originalAtsScore: result.atsScore,
       originalMatchedKeywords: result.matchedKeywords,
       originalMissingKeywords: result.missingKeywords,
