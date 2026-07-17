@@ -31,7 +31,9 @@ export function ResultView({
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
 
-  const keywordsAdded = matchedKeywords.filter((kw) => previousMissingKeywords.includes(kw));
+  const normalize = (kw: string) => kw.trim().toLowerCase();
+  const previousMissingNormalized = previousMissingKeywords.map(normalize);
+  const keywordsAdded = matchedKeywords.filter((kw) => previousMissingNormalized.includes(normalize(kw)));
 
   async function handleDownload() {
     setDownloading(true);
