@@ -13,13 +13,6 @@ npm run lint      # Run ESLint
 
 The `--webpack` flag is intentional; the app uses `@react-pdf/renderer` which does not bundle cleanly with Turbopack.
 
-To run the DOCX parsing/rewriting spike independently:
-
-```bash
-cd spike
-node rewrite.js   # round-trips all fixtures through the fake optimizer
-node validate.js  # validates fixture round-trips
-```
 
 ## Environment Variables
 
@@ -48,20 +41,30 @@ Copy `.env.local` and fill in real values:
    — master resume reuse or a one-off override upload
    (`components/ResumeSourceStep.tsx`) — then job description
    (`components/JobDescriptionStep.tsx`, unchanged).
-3. The browser POSTs `multipart/form-data` to `POST /api/optimize`
-   (`app/api/optimize/route.ts`): `companyName`, `roleTitle`,
+3. The browser POSTs `multipart/form-data` to `POST /api/score`
+   (`app/api/score/route.ts`): `companyName`, `roleTitle`,
    `jobDescription`, `useMaster`, and either `resume` (override upload)
    or nothing (server loads the stored `MasterResume`).
 4. The route parses the resume into `ResumeSection[]`, calls
-   `getAiProvider().optimizeResume(...)`, and on success persists an
-   `Application` row (company/role/job description/`resumeData`/score/
-   keywords/summary — no file) before returning the result plus its new
-   `applicationId`.
+   `getAiProvider().scoreResume(...)` (scores the *original* resume and
+   suggests improvements — no rewrite), and on success persists an
+   `Application` row in a "scored" state (`resumeData` left `null`)
+   before returning the result plus its new `applicationId`.
 5. The browser redirects to `/applications/:id`
-   (`app/applications/[id]/page.tsx`), which fetches the saved record via
-   `GET /api/applications/:id` and renders it with the existing
-   `ResultView` component.
-6. Downloads are unchanged: `ResultView` posts `resumeData` +
+   (`app/applications/[id]/page.tsx`), which fetches the record via
+   `GET /api/applications/:id` and shows `ScoringView` (score, keywords,
+   suggested improvements, an "Optimize this resume" button) while
+   `resumeData` is still `null`.
+6. Clicking "Optimize" POSTs `{ applicationId }` to `POST /api/optimize`
+   (`app/api/optimize/route.ts`), which calls
+   `getAiProvider().optimizeResume(...)` against the `Application`'s
+   frozen `originalSections`, then updates the row's score/keywords/
+   `resumeData`/summary — the original score/keywords are never
+   overwritten, so the before/after comparison stays meaningful.
+7. Once optimized, the detail page renders `ResultView`: before → after
+   ATS score, keywords added vs. still missing, the summary of changes,
+   template picker, and download button.
+8. Downloads are unchanged: `ResultView` posts `resumeData` +
    `templateId` to `POST /api/resume/render`, which renders a PDF from
    scratch every time — nothing is ever stored as rendered bytes.
 
@@ -151,6 +154,12 @@ doesn't support the advisory locks `prisma migrate` needs and will hang.
   the AI's structured output — no file) models.
 - `app/api/master-resume/route.ts` — `GET` (metadata only) / `POST`
   (upload or replace) the user's master resume.
+- `app/api/score/route.ts` — `POST /api/score`, scores the original
+  resume (no rewrite) and creates the `Application` in a "scored" state.
+- `app/api/optimize/route.ts` — `POST /api/optimize`, takes
+  `{ applicationId }` and runs the actual rewrite against a previously
+  scored `Application`, leaving the original score/keywords untouched as
+  the permanent "before" baseline.
 - `app/api/applications/route.ts`, `app/api/applications/[id]/route.ts`
   — list / detail / delete a user's saved applications.
 - `lib/hooks/useMasterResume.ts` — shared client hook used by both the
@@ -159,7 +168,3 @@ doesn't support the advisory locks `prisma migrate` needs and will hang.
 - Replacing the master resume never touches past `Application` rows —
   each one already has its own frozen `resumeData` snapshot from when it
   was created.
-
-### `spike/` directory
-
-Standalone Node.js scripts (CommonJS) used during initial development to validate the DOCX round-trip strategy. Not imported by the Next.js app. Has its own `package.json` with a separate install.
