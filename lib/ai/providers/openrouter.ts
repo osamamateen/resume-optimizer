@@ -1,5 +1,5 @@
-import type { AiProvider, OptimizeRequest, OptimizationResult } from "../types";
-import { optimizationResultSchema } from "../types";
+import type { AiProvider, OptimizeRequest, OptimizationResult, ScoreResult } from "../types";
+import { optimizationResultSchema, scoreResultSchema } from "../types";
 import { ResumeDataSchema } from "../../../types/resume.types";
 import type { ResumeData } from "../../../types/resume.types";
 
@@ -25,6 +25,24 @@ The JSON must match this exact structure:
   "matchedKeywords": ["string"],
   "missingKeywords": ["string"],
   "summaryOfChanges": { "headline": "string", "bullets": ["string"] }
+}`;
+
+const SCORE_SYSTEM_PROMPT = `You are an expert resume reviewer specializing in ATS (Applicant Tracking System) compatibility.
+You will be given a resume broken into text sections (each with an id) and a target job description.
+
+Do NOT rewrite or edit the resume. Only evaluate it exactly as given.
+
+1. Estimate an ATS match score (0-100) for the resume exactly as written against the job description.
+2. List keywords from the job description the resume already matches, and keywords it's missing.
+3. Suggest concrete improvements the candidate could make — a short headline plus specific bullet points (e.g. keywords to work in, weak phrasing to strengthen, missing quantifiable results). Never suggest inventing experience or skills the candidate doesn't have — suggestions are about how they present what they already have.
+
+You MUST respond with valid JSON only — no markdown, no code fences, no extra text.
+The JSON must match this exact structure:
+{
+  "atsScore": number (0-100),
+  "matchedKeywords": ["string"],
+  "missingKeywords": ["string"],
+  "suggestions": { "headline": "string", "bullets": ["string"] }
 }`;
 
 const rewriteResultSchema = optimizationResultSchema.omit({ resumeData: true });
@@ -82,6 +100,49 @@ export class OpenRouterProvider implements AiProvider {
     const resumeData = await this.extractStructuredResume(rewritten.sections);
 
     return { ...rewritten, resumeData };
+  }
+
+  async scoreResume(request: OptimizeRequest): Promise<ScoreResult> {
+    const userContent = JSON.stringify({
+      jobDescription: request.jobDescription,
+      sections: request.sections,
+    });
+
+    const res = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": process.env.OPENROUTER_APP_URL ?? "http://localhost:3000",
+        "X-Title": process.env.OPENROUTER_APP_NAME ?? "Resume Optimizer",
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: "system", content: SCORE_SYSTEM_PROMPT },
+          { role: "user", content: userContent },
+        ],
+        response_format: { type: "json_object" },
+        max_tokens: 2000,
+      }),
+    });
+
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`OpenRouter API error ${res.status}: ${body}`);
+    }
+
+    const data = await res.json() as {
+      choices: Array<{ message: { content: string } }>;
+      error?: { message: string };
+    };
+
+    if (data.error) throw new Error(`OpenRouter error: ${data.error.message}`);
+
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) throw new Error("OpenRouter returned an empty response");
+
+    return scoreResultSchema.parse(JSON.parse(content));
   }
 
   private async extractStructuredResume(
