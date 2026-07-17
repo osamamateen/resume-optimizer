@@ -13,6 +13,8 @@ model User {
   passwordHash  String
   createdAt     DateTime       @default(now())
   refreshTokens RefreshToken[]
+  masterResume  MasterResume?
+  applications  Application[]
 }
 
 model RefreshToken {
@@ -25,4 +27,34 @@ model RefreshToken {
   createdAt DateTime  @default(now())
 
   @@index([userId])
+}
+
+model MasterResume {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  fileName  String
+  mimeType  String
+  fileData  Bytes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Application {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  companyName     String
+  roleTitle       String
+  jobDescription  String
+  resumeData      Json
+  atsScore        Int
+  matchedKeywords Json
+  missingKeywords Json
+  summaryHeadline String
+  summaryBullets  Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId, createdAt])
 }
