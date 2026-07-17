@@ -1,7 +1,6 @@
 import JSZip from "jszip";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
 
-// Parsing/rewriting strategy and the four fixes below were derived from a spike
 // that round-tripped a real resume through Word: trimValues:false (parser default
 // silently eats inter-run spaces), suppressEmptyNode:true (the builder's
 // `unpairedTags` option does not actually self-close tags in preserveOrder mode,

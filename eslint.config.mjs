@@ -13,7 +13,7 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
     // Standalone CommonJS tooling, not part of the app's TS/ESM codebase:
-    "spike/**",
+    // "spike/**",
     "scripts/**",
   ]),
 ]);

@@ -56,13 +56,3 @@ npm run lint    # Run ESLint
 ```
 
 The Webpack flag is intentional — the app depends on packages that don't bundle cleanly with Turbopack.
-
-## `spike/`
-
-Standalone Node.js scripts used to validate the DOCX round-trip strategy independently of the Next.js app:
-
-```bash
-cd spike
-node rewrite.js   # round-trips all fixtures through the fake optimizer
-node validate.js  # validates fixture round-trips
-```
