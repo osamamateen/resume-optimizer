@@ -186,25 +186,4 @@ and scope every query to the authenticated `userId`.
 ## Testing
 
 No test runner exists in this repo yet (`package.json` has no test
-script); adding one is out of scope here. Verification is manual via
-`npm run dev`:
-
-1. Log in with no master resume yet — dashboard shows empty state,
-   "New application" forces a resume upload with "Save as master"
-   checked.
-2. Complete the flow (company, role, job description) — confirm
-   redirect to the new application's detail page, and that the
-   dashboard now lists it.
-3. Start a second application — confirm step 2 defaults to "Use my
-   master resume" and skips re-upload.
-4. Start a third application choosing "Upload a different resume" —
-   confirm it does NOT change the stored master resume.
-5. Replace the master resume from the dashboard, then open an
-   application created before the replace — confirm its `resumeData`
-   is unchanged (not affected by the replacement).
-6. Download a PDF from a saved application's detail page — confirm it
-   renders correctly from the stored `resumeData`.
-7. Delete an application — confirm it disappears from the dashboard and
-   `GET /api/applications/:id` now 404s.
-8. Hit `GET /api/applications/:id` for an id owned by a different user
-   (e.g. a second test account) — confirm 404, not 401/403.
+script); adding one is out of scope here.
