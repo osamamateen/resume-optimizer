@@ -95,7 +95,6 @@ export async function POST(req: NextRequest) {
   } finally {
     console.timeEnd("Optimizing resume with AI");
   }
-  console.timeEnd("Extracting structured resume data");
 
   const application = await prisma.application.create({
     data: {

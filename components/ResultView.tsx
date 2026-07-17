@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconDownload, IconRefresh } from "@tabler/icons-react";
+import { IconArrowLeft, IconDownload } from "@tabler/icons-react";
 import type { ResumeData } from "@/types/resume.types";
 import { TemplateSelector } from "@/components/resume/TemplateSelector";
 import { authFetch } from "@/lib/auth/authFetch";
@@ -148,7 +148,7 @@ export function ResultView({
           onClick={onRestart}
           className="inline-flex items-center justify-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-[44px]"
         >
-          <IconRefresh size={16} /> Start over
+          <IconArrowLeft size={16} /> Go Back
         </button>
       </div>
     </div>
