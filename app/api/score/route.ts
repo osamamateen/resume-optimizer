@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { parseDocx } from "@/lib/parsing/docx";
 import { extractPdfText } from "@/lib/parsing/pdf";
 import { sectionsFromDocxSegments, sectionsFromPlainText } from "@/lib/parsing/extractSections";
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
       companyName: companyName.trim(),
       roleTitle: roleTitle.trim(),
       jobDescription,
-      originalSections: sections as unknown as any,
+      originalSections: sections as unknown as Prisma.InputJsonValue,
       originalAtsScore: result.atsScore,
       originalMatchedKeywords: result.matchedKeywords,
       originalMissingKeywords: result.missingKeywords,
