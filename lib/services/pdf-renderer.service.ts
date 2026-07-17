@@ -21,7 +21,7 @@ export async function renderResumePDF(
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
-      margin: { top: "1.2cm", right: "1.5cm", bottom: "1.2cm", left: "1.5cm" },
+      margin: { top: "0.3cm", right: "0.3cm", bottom: "0.3cm", left: "0.3cm" },
     });
 
     return Buffer.from(pdf);
