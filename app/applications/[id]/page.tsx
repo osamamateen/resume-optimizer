@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { ResultView } from "@/components/ResultView";
 import { ScoringView } from "@/components/ScoringView";
+import { LoadingView } from "@/components/LoadingView";
+import { AppHeader } from "@/components/AppHeader";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import type { ResumeData } from "@/types/resume.types";
 
 interface ApplicationDetail {
@@ -87,15 +89,8 @@ export default function ApplicationDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <span className="font-medium text-gray-900 dark:text-white">
-            Resume<span className="text-blue-600">Tailor</span>
-          </span>
-          <ThemeToggle />
-        </div>
-      </header>
+    <div className="min-h-screen bg-bg text-text-primary">
+      <AppHeader rightSlot={<ThemeToggle />} />
 
       <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
         {error && (
@@ -106,7 +101,9 @@ export default function ApplicationDetailPage() {
 
         {!application && !error && <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>}
 
-        {application && (
+        {application && optimizing && <LoadingView variant="optimizing" />}
+
+        {application && !optimizing && (
           <>
             <div className="space-y-1">
               <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500">
