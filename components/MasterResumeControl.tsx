@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { IconFileText } from "@tabler/icons-react";
 import { authFetch } from "@/lib/auth/authFetch";
 import { useMasterResume } from "@/lib/hooks/useMasterResume";
 
@@ -46,18 +47,47 @@ export function MasterResumeControl() {
 
   if (!loaded) return null;
 
+  if (fileName) {
+    return (
+      <div className="flex items-center justify-between gap-3 bg-surface border border-accent-surface rounded-lg px-4 py-3 flex-wrap">
+        <div className="flex items-center gap-[11px] min-w-0">
+          <IconFileText size={17} className="text-accent shrink-0" />
+          <div className="min-w-0">
+            <div className="text-[10.5px] tracking-wide text-accent uppercase">Master resume</div>
+            <div className="text-[13.5px] text-text-primary truncate">{fileName}</div>
+          </div>
+        </div>
+        <div {...getRootProps()} className="shrink-0">
+          <input {...getInputProps()} />
+          <button
+            type="button"
+            disabled={uploading}
+            className="border-none bg-transparent text-accent text-[13px] cursor-pointer disabled:opacity-50"
+          >
+            {uploading ? "Uploading..." : "Replace"}
+          </button>
+        </div>
+        {error && <p className="text-xs text-red-600 dark:text-red-400 w-full">{error}</p>}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex items-center justify-between text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
-      <span className="text-gray-600 dark:text-gray-300 truncate">
-        Master resume: {fileName ?? "none uploaded yet"}
-      </span>
-      <div {...getRootProps()} className="shrink-0 ml-3">
+    <div className="flex items-center justify-between gap-3 bg-surface border border-border-hairline rounded-lg px-4 py-3 flex-wrap">
+      <div className="text-[13.5px] text-text-secondary">
+        No master resume yet — upload one so new applications can reuse it.
+      </div>
+      <div {...getRootProps()} className="shrink-0">
         <input {...getInputProps()} />
-        <button type="button" disabled={uploading} className="text-blue-600 hover:text-blue-700 disabled:opacity-50">
-          {uploading ? "Uploading..." : fileName ? "Replace" : "Upload"}
+        <button
+          type="button"
+          disabled={uploading}
+          className="border border-accent bg-transparent text-accent px-[14px] py-[7px] rounded-lg text-[13px] font-medium cursor-pointer disabled:opacity-50 whitespace-nowrap"
+        >
+          {uploading ? "Uploading..." : "Upload resume"}
         </button>
       </div>
-      {error && <p className="text-xs text-red-600 ml-3">{error}</p>}
+      {error && <p className="text-xs text-red-600 dark:text-red-400 w-full">{error}</p>}
     </div>
   );
 }
