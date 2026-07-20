@@ -67,7 +67,7 @@ export default function Home() {
         }
       />
 
-      <main className="max-w-[760px] px-[clamp(24px,6vw,64px)] pt-7 pb-[72px]">
+      <main className="max-w-[760px] mx-auto px-[clamp(24px,6vw,64px)] pt-7 pb-[72px]">
         <div className="flex items-baseline justify-between flex-wrap gap-[14px] mb-6">
           <div>
             <div className="text-[26px] font-medium tracking-[-0.015em]">Your applications</div>
