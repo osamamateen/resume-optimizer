@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAuth, UnauthorizedError } from "@/lib/auth/requireAuth";
+import { mockResponse } from "./response";
+import { MOCK_APPLICATION_ID } from "@/app/api/score/response";
 
 export const runtime = "nodejs";
 
@@ -24,6 +26,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 
   const { id } = await params;
+
+  if (id === MOCK_APPLICATION_ID) {
+    return mockResponse();
+  }
+
   const application = await loadOwnedApplication(id, userId);
   if (!application) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

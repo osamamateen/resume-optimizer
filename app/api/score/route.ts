@@ -6,9 +6,12 @@ import { sectionsFromDocxSegments, sectionsFromPlainText } from "@/lib/parsing/e
 import { getAiProvider } from "@/lib/ai/provider";
 import { requireAuth, UnauthorizedError } from "@/lib/auth/requireAuth";
 import { prisma } from "@/lib/prisma";
+import { mockResponse } from "./response";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
+
+const test = process.env.NEXT_PUBLIC_TEST_MODE === "true";
 
 export async function POST(req: NextRequest) {
   let userId: string;
@@ -42,6 +45,11 @@ export async function POST(req: NextRequest) {
   let fileName: string;
   let mimeType: string;
   let buffer: Buffer;
+
+  if(test){
+
+    return mockResponse();
+  }
 
   if (useMaster) {
     const masterResume = await prisma.masterResume.findUnique({ where: { userId } });

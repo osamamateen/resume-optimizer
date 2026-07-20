@@ -3,10 +3,11 @@ import { getAiProvider } from "@/lib/ai/provider";
 import { requireAuth, UnauthorizedError } from "@/lib/auth/requireAuth";
 import { prisma } from "@/lib/prisma";
 import type { SectionInput } from "@/lib/ai/types";
+import { mockResponse } from "./response";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
-
+const test = process.env.NEXT_PUBLIC_TEST_MODE === "true";
 export async function POST(req: NextRequest) {
   let userId: string;
   try {
@@ -16,6 +17,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     throw err;
+  }
+
+  
+  if(test){
+    return mockResponse();
   }
 
   let body: unknown;
