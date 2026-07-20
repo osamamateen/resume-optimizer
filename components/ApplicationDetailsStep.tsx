@@ -1,7 +1,5 @@
 "use client";
 
-import { IconArrowRight } from "@tabler/icons-react";
-
 interface ApplicationDetailsStepProps {
   companyName: string;
   roleTitle: string;
@@ -20,13 +18,12 @@ export function ApplicationDetailsStep({
   const canProceed = companyName.trim().length > 0 && roleTitle.trim().length > 0;
 
   return (
-    <div className="space-y-4">
-      <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500">
-        Application details
-      </p>
-      <div className="space-y-3">
+    <div className="max-w-[440px] mx-auto">
+      <div className="text-[11px] tracking-wide text-accent uppercase mb-[6px]">Application details</div>
+      <div className="text-2xl font-medium mb-6 tracking-[-0.015em] text-text-primary">Where are you applying?</div>
+      <div className="flex flex-col gap-4">
         <div>
-          <label htmlFor="companyName" className="text-sm text-gray-700 dark:text-gray-300">
+          <label htmlFor="companyName" className="block text-[12px] mb-[5px] text-text-secondary">
             Company
           </label>
           <input
@@ -35,11 +32,11 @@ export function ApplicationDetailsStep({
             value={companyName}
             onChange={(e) => onCompanyNameChange(e.target.value)}
             placeholder="Acme Corp"
-            className="mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full min-h-[36px] px-3 py-2 text-[15px] text-text-primary bg-surface border border-border-hairline rounded-lg outline-none"
           />
         </div>
         <div>
-          <label htmlFor="roleTitle" className="text-sm text-gray-700 dark:text-gray-300">
+          <label htmlFor="roleTitle" className="block text-[12px] mb-[5px] text-text-secondary">
             Role title
           </label>
           <input
@@ -48,19 +45,22 @@ export function ApplicationDetailsStep({
             value={roleTitle}
             onChange={(e) => onRoleTitleChange(e.target.value)}
             placeholder="Senior Backend Engineer"
-            className="mt-1 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full min-h-[36px] px-3 py-2 text-[15px] text-text-primary bg-surface border border-border-hairline rounded-lg outline-none"
           />
         </div>
-      </div>
-      <div className="flex justify-end">
-        <button
-          type="button"
-          disabled={!canProceed}
-          onClick={onNext}
-          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors min-h-[44px]"
-        >
-          Next <IconArrowRight size={16} />
-        </button>
+        <div className="flex justify-end mt-1.5">
+          <button
+            type="button"
+            disabled={!canProceed}
+            onClick={onNext}
+            className="flex items-center gap-[7px] px-[18px] py-[9px] border border-accent rounded-lg bg-transparent text-accent text-sm font-medium disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer"
+          >
+            Next
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+              <path d="M2 6.5h9M7 2.5l4 4-4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
