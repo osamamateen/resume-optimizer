@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { IconCheck } from "@tabler/icons-react";
 import { authFetch } from "@/lib/auth/authFetch";
+import { TemplatePreviewModal } from "@/components/resume/TemplatePreviewModal";
 
 interface TemplateOption {
   id: string;
@@ -107,6 +108,7 @@ const PREVIEWS: Record<string, React.ComponentType> = {
 export function TemplateSelector({ selectedTemplateId, onSelect }: TemplateSelectorProps) {
   const [templates, setTemplates] = useState<TemplateOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
 
   useEffect(() => {
     authFetch("/api/templates")
@@ -123,45 +125,67 @@ export function TemplateSelector({ selectedTemplateId, onSelect }: TemplateSelec
   }, []);
 
   if (loading) {
-    return <p className="text-sm text-gray-500 dark:text-gray-400">Loading templates...</p>;
+    return <p className="text-sm text-text-secondary">Loading templates...</p>;
   }
 
+  const previewTemplate = templates.find((t) => t.id === previewTemplateId) ?? null;
+
   return (
-    <div className="grid grid-cols-2 gap-3">
-      {templates.map((template) => {
-        const isSelected = template.id === selectedTemplateId;
-        const Preview = PREVIEWS[template.id];
-        return (
-          <div
-            key={template.id}
-            role="button"
-            tabIndex={0}
-            onClick={() => onSelect(template.id)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                onSelect(template.id);
-              }
-            }}
-            className={`relative cursor-pointer rounded-xl p-2 sm:p-3 hover:shadow-sm transition-all ${
-              isSelected
-                ? "border-2 border-blue-600"
-                : "border border-gray-200 dark:border-gray-700"
-            }`}
-          >
-            {isSelected && (
-              <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center z-10">
-                <IconCheck size={10} className="text-white" />
+    <>
+      <div className="grid grid-cols-2 gap-3">
+        {templates.map((template) => {
+          const isSelected = template.id === selectedTemplateId;
+          const Preview = PREVIEWS[template.id];
+          return (
+            <div
+              key={template.id}
+              role="button"
+              tabIndex={0}
+              onClick={() => onSelect(template.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelect(template.id);
+                }
+              }}
+              className={`relative cursor-pointer rounded-lg p-[11px] bg-surface ${
+                isSelected ? "shadow-[0_0_0_2px_var(--color-accent)]" : "shadow-[0_0_0_1px_var(--color-border-hairline)]"
+              }`}
+            >
+              {isSelected && (
+                <div className="absolute top-2 right-2 w-[18px] h-[18px] rounded-full bg-accent flex items-center justify-center z-10">
+                  <IconCheck size={10} className="text-bg" />
+                </div>
+              )}
+              <div className="h-20 sm:h-28 rounded-md overflow-hidden bg-surface-alt mb-[10px]">
+                {Preview ? <Preview /> : null}
               </div>
-            )}
-            <div className="h-20 sm:h-28 rounded-lg overflow-hidden border border-gray-100 dark:border-gray-800 mb-3 bg-white dark:bg-gray-800">
-              {Preview ? <Preview /> : null}
+              <div className="flex items-baseline justify-between gap-2">
+                <div className="text-[13px] font-medium text-text-primary">{template.name}</div>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPreviewTemplateId(template.id);
+                  }}
+                  className="text-[11.5px] text-accent bg-transparent border-none cursor-pointer shrink-0"
+                >
+                  Preview
+                </button>
+              </div>
+              <p className="text-[11.5px] text-text-secondary leading-tight mt-0.5">{template.description}</p>
             </div>
-            <p className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">{template.name}</p>
-            <p className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500 mt-0.5">{template.description}</p>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+
+      {previewTemplate && (
+        <TemplatePreviewModal
+          templateName={previewTemplate.name}
+          onClose={() => setPreviewTemplateId(null)}
+          onUseTemplate={() => onSelect(previewTemplate.id)}
+        />
+      )}
+    </>
   );
 }
