@@ -28,7 +28,7 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg text-text-primary relative flex items-center p-[6vw] pl-[clamp(24px,8vw,120px)]">
+    <div className="min-h-screen bg-bg text-text-primary relative flex items-center justify-center p-[6vw]">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
