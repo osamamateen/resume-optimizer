@@ -1,5 +1,7 @@
 "use client";
 
+import { useCountUp } from "@/lib/hooks/useCountUp";
+
 interface ScoringViewProps {
   atsScore: number;
   matchedKeywords: string[];
@@ -10,6 +12,8 @@ interface ScoringViewProps {
   error: string | null;
 }
 
+const CIRCUMFERENCE = 326.7;
+
 export function ScoringView({
   atsScore,
   matchedKeywords,
@@ -19,31 +23,55 @@ export function ScoringView({
   optimizing,
   error,
 }: ScoringViewProps) {
+  const displayedScore = useCountUp(0, atsScore);
+  const gaugeOffset = CIRCUMFERENCE * (1 - displayedScore / 100);
+
   return (
     <div className="space-y-6">
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4 w-fit">
-        <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">ATS alignment</p>
-        <p className="text-2xl sm:text-3xl font-medium text-gray-800 dark:text-white">
-          {atsScore}<span className="text-sm text-gray-400 ml-1">/100</span>
-        </p>
+      <div className="flex items-center gap-6 bg-surface rounded-card p-6 flex-wrap">
+        <div className="relative w-[112px] h-[112px] shrink-0">
+          <svg width="112" height="112" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="52" fill="none" className="stroke-chip-neutral-bg" strokeWidth="8" />
+            <circle
+              cx="60"
+              cy="60"
+              r="52"
+              fill="none"
+              className="stroke-accent"
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeDasharray={CIRCUMFERENCE}
+              strokeDashoffset={gaugeOffset}
+              transform="rotate(-90 60 60)"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-[27px] font-medium text-text-primary">{displayedScore}</div>
+            <div className="text-[11px] text-text-secondary">/ 100</div>
+          </div>
+        </div>
+        <div className="flex-1 min-w-[180px]">
+          <div className="text-[11px] tracking-wide text-accent uppercase mb-[5px]">ATS alignment</div>
+          <div className="text-sm text-text-secondary leading-relaxed">{suggestions.headline}</div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Matched keywords</p>
-          <div className="flex flex-wrap gap-1.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="bg-surface rounded-lg p-4">
+          <div className="text-[10.5px] tracking-wide text-text-secondary uppercase mb-[10px]">Matched keywords</div>
+          <div className="flex flex-wrap gap-[6px]">
             {matchedKeywords.map((kw) => (
-              <span key={kw} className="bg-green-50 dark:bg-green-950 text-green-800 dark:text-green-300 text-xs px-2 py-0.5 rounded-full">
+              <span key={kw} className="text-[11px] px-[10px] py-[3px] rounded-md bg-accent-surface text-accent-surface-text">
                 {kw}
               </span>
             ))}
           </div>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4">
-          <p className="text-xs text-gray-400 dark:text-gray-500 mb-2">Missing keywords</p>
-          <div className="flex flex-wrap gap-1.5">
+        <div className="bg-surface rounded-lg p-4">
+          <div className="text-[10.5px] tracking-wide text-text-secondary uppercase mb-[10px]">Missing keywords</div>
+          <div className="flex flex-wrap gap-[6px]">
             {missingKeywords.map((kw) => (
-              <span key={kw} className="bg-red-50 dark:bg-red-950 text-red-800 dark:text-red-300 text-xs px-2 py-0.5 rounded-full">
+              <span key={kw} className="text-[11px] px-[10px] py-[3px] rounded-md bg-chip-neutral-bg text-chip-neutral-text">
                 {kw}
               </span>
             ))}
@@ -51,17 +79,16 @@ export function ScoringView({
         </div>
       </div>
 
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 sm:p-4 space-y-3">
-        <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Suggested improvements</p>
-        <p className="text-sm font-medium text-gray-800 dark:text-white leading-relaxed">{suggestions.headline}</p>
-        <ul className="space-y-1.5">
+      <div className="bg-surface rounded-lg p-[19px]">
+        <div className="text-[10.5px] tracking-wide text-text-secondary uppercase mb-[10px]">Suggested improvements</div>
+        <div className="flex flex-col gap-[9px]">
           {suggestions.bullets.map((bullet, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <span className="mt-1.5 w-1 h-1 rounded-full bg-blue-400 shrink-0" />
-              <span className="leading-relaxed">{bullet}</span>
-            </li>
+            <div key={i} className="flex gap-[9px] text-[13.5px] text-text-secondary leading-relaxed">
+              <span className="text-accent shrink-0">—</span>
+              <span>{bullet}</span>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
 
       {error && (
@@ -74,8 +101,11 @@ export function ScoringView({
         type="button"
         onClick={onOptimize}
         disabled={optimizing}
-        className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm text-white font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors min-h-[44px]"
+        className="w-full flex items-center justify-center gap-[9px] px-4 py-3 border border-accent rounded-lg bg-transparent text-accent text-[15px] font-medium disabled:opacity-50 cursor-pointer"
       >
+        <svg width="15" height="15" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1l1.2 3.8L12 6l-3.8 1.2L7 11l-1.2-3.8L2 6l3.8-1.2L7 1z" stroke="currentColor" strokeWidth="1" />
+        </svg>
         {optimizing ? "Optimizing..." : "Optimize this resume"}
       </button>
     </div>
