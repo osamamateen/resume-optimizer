@@ -45,7 +45,7 @@ These become Tailwind utilities (`bg-surface`, `text-primary`, `border-hairline`
 
 ### `app/login/page.tsx`, `app/signup/page.tsx`
 
-Layout: centered-left card (flex, items-center, padding responsive per reference `6vw 6vw 6vw clamp(24px,8vw,120px)`), `max-w-[380px]` card wrapper. `ThemeToggle` stays top-right (absolute), unchanged from current behavior. Wordmark "Resume**Tailor**" (Tailor in `text-accent`) above the card, `text-[19px] font-medium tracking-[-0.015em]`.
+Layout: **true centered card** — `flex items-center justify-center`, `p-[6vw]`, `max-w-[380px]` card wrapper. (**Correction, 2026-07-20:** the reference's literal padding — `6vw 6vw 6vw clamp(24px,8vw,120px)`, i.e. an asymmetric left padding instead of `justify-center` — was implemented first and read as unintentionally left-aligned in the browser; the user flagged it immediately and it was fixed to `justify-center`. See the standing principle below — this applies to every future phase, not just this one.) `ThemeToggle` stays top-right (absolute), unchanged from current behavior. Wordmark "Resume**Tailor**" (Tailor in `text-accent`) above the card, `text-[19px] font-medium tracking-[-0.015em]`.
 
 Card: `bg-surface rounded-card` (14px), shadow only on this card (`shadow-[0_0_0_1px_theme(colors.border),0_6px_18px_rgba(0,0,0,0.55)]` in dark; a lighter equivalent shadow in light mode — e.g. `0_0_0_1px_theme(colors.border),0_6px_18px_rgba(0,0,0,0.08)`). Title (`text-[22px] font-medium`), subtitle in `text-secondary`, stacked labeled inputs (`bg-bg border border-hairline rounded-sm`), full-width outlined accent button, and the "switch screen" link line below the form — all restyled with the new tokens, same JSX structure/order as today.
 
@@ -62,6 +62,12 @@ Unchanged. `handleSubmit` → `login(email, password)` / `signup(email, password
 ## Error Handling
 
 Unchanged behavior (see above) — only the visual treatment of the error message changes.
+
+## Standing design principle (applies to every future phase)
+
+**Use real flexbox centering (`items-center justify-center`) for any centered card/modal/dialog layout — never approximate centering with asymmetric padding**, even if that's what the reference `.dc.html` mockup's literal inline CSS does. The reference sometimes centers via viewport-relative padding math (`clamp(24px,8vw,120px)` on one side only) that happens to look centered in the specific frame it was designed at, but reads as visibly off-center at other viewport widths or in a real browser. `justify-center` is the actual requirement; treat any reference padding-based "centering" as an implementation detail to replace, not to port literally.
+
+This applies directly to Phase E's template-preview modal (the reference already writes that one correctly, with `display:flex;align-items:center;justify-content:center` — keep it that way) and to any other centered element introduced in Phases C/D/E. Inline page content that naturally flows left under the app header (dashboard, wizard steps) is a different pattern and this rule doesn't apply there — only to elements meant to be visually centered on the page/viewport.
 
 ## Testing
 
