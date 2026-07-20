@@ -4,22 +4,61 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --bg: #ffffff;
+  --surface: #f4f3fa;
+  --surface-alt: #f0eff8;
+  --border-hairline: rgba(32, 34, 44, 0.12);
+  --border-dashed: rgba(32, 34, 44, 0.2);
+  --text-primary: #20222c;
+  --text-secondary: rgba(32, 34, 44, 0.6);
+  --accent: #9184d9;
+  --accent-surface: #e7e5fe;
+  --accent-surface-text: #5d5294;
+  --chip-neutral-bg: #e9e9ee;
+  --chip-neutral-text: #30323c;
+  --card-shadow: 0 0 0 1px var(--border-hairline), 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --bg: #161826;
+  --surface: #232532;
+  --surface-alt: #1c1e2c;
+  --border-hairline: rgba(233, 233, 237, 0.16);
+  --border-dashed: rgba(233, 233, 237, 0.25);
+  --text-primary: #e9e9ed;
+  --text-secondary: rgba(233, 233, 237, 0.55);
+  --accent: #9184d9;
+  --accent-surface: #423a6a;
+  --accent-surface-text: #f5f4ff;
+  --chip-neutral-bg: #3f424d;
+  --chip-neutral-text: #f3f5fe;
+  --card-shadow: 0 0 0 1px #3f424d, 0 6px 18px rgba(0, 0, 0, 0.55);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-border-hairline: var(--border-hairline);
+  --color-border-dashed: var(--border-dashed);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-accent: var(--accent);
+  --color-accent-surface: var(--accent-surface);
+  --color-accent-surface-text: var(--accent-surface-text);
+  --color-chip-neutral-bg: var(--chip-neutral-bg);
+  --color-chip-neutral-text: var(--chip-neutral-text);
+  --radius-card: 14px;
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
