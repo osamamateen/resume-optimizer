@@ -7,7 +7,7 @@ import { ScoringView } from "@/components/ScoringView";
 import { LoadingView } from "@/components/LoadingView";
 import { AppHeader } from "@/components/AppHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Spinner } from "@/components/Spinner";
+import { Skeleton } from "@/components/Skeleton";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
 import type { ResumeData } from "@/types/resume.types";
@@ -101,9 +101,10 @@ export default function ApplicationDetailPage() {
         )}
 
         {!application && !error && (
-          <div className="flex items-center justify-center gap-2 py-8 text-sm text-text-secondary">
-            <Spinner />
-            Loading...
+          <div className="space-y-1">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-6 w-64" />
+            <Skeleton className="h-40 w-full mt-4" />
           </div>
         )}
 

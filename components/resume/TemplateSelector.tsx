@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { IconCheck } from "@tabler/icons-react";
 import { authFetch } from "@/lib/auth/authFetch";
 import { TemplatePreviewModal } from "@/components/resume/TemplatePreviewModal";
-import { Spinner } from "@/components/Spinner";
+import { Skeleton } from "@/components/Skeleton";
 
 interface TemplateOption {
   id: string;
@@ -127,9 +127,14 @@ export function TemplateSelector({ selectedTemplateId, onSelect }: TemplateSelec
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 text-sm text-text-secondary">
-        <Spinner />
-        Loading templates...
+      <div className="grid grid-cols-2 gap-3">
+        {[0, 1].map((i) => (
+          <div key={i} className="rounded-lg p-[11px] bg-surface">
+            <Skeleton className="h-20 sm:h-28 w-full mb-[10px]" />
+            <Skeleton className="h-4 w-2/3 mb-1" />
+            <Skeleton className="h-3 w-full" />
+          </div>
+        ))}
       </div>
     );
   }

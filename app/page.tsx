@@ -8,7 +8,7 @@ import { authFetch } from "@/lib/auth/authFetch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MasterResumeControl } from "@/components/MasterResumeControl";
 import { AppHeader } from "@/components/AppHeader";
-import { Spinner } from "@/components/Spinner";
+import { Skeleton } from "@/components/Skeleton";
 
 interface ApplicationSummary {
   id: string;
@@ -96,10 +96,27 @@ export default function Home() {
         </div>
 
         {applications === null && (
-          <div className="flex items-center justify-center gap-2 py-8 text-sm text-text-secondary">
-            <Spinner />
-            Loading applications...
-          </div>
+          <>
+            <div className="grid gap-[11px] mb-6 grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="bg-surface rounded-lg px-4 py-[14px]">
+                  <Skeleton className="h-[10.5px] w-16 mb-2" />
+                  <Skeleton className="h-6 w-10" />
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-col gap-[9px]">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="bg-surface rounded-lg px-[18px] py-[15px] flex items-center justify-between gap-4">
+                  <div className="flex flex-col gap-[8px]">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-3 w-24" />
+                  </div>
+                  <Skeleton className="h-5 w-12 shrink-0" />
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {applications !== null && total > 0 && (
