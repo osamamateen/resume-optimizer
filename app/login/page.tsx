@@ -28,50 +28,72 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950 relative">
+    <div className="min-h-screen bg-bg text-text-primary relative flex items-center p-[6vw] pl-[clamp(24px,8vw,120px)]">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      <form onSubmit={handleSubmit} className="w-full max-w-sm px-6 py-8 space-y-4">
-        <h1 className="text-lg font-medium text-gray-900 dark:text-white">
-          Resume<span className="text-blue-600">Tailor</span>
-        </h1>
-        {error && (
-          <p className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 p-3 text-sm text-red-700 dark:text-red-300">{error}</p>
-        )}
-        <div className="space-y-1">
-          <label className="text-sm text-gray-700 dark:text-gray-300" htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-3 py-2 text-sm"
-          />
+
+      <div className="w-full max-w-[380px] flex flex-col gap-[26px]">
+        <div className="text-[19px] font-medium tracking-[-0.015em]">
+          Resume<span className="text-accent">Tailor</span>
         </div>
-        <div className="space-y-1">
-          <label className="text-sm text-gray-700 dark:text-gray-300" htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white px-3 py-2 text-sm"
-          />
+
+        <div className="bg-surface rounded-card p-[28px] shadow-[var(--card-shadow)]">
+          <h1 className="text-[22px] font-medium mb-1 tracking-[-0.015em]">Welcome back</h1>
+          <p className="text-[13px] text-text-secondary mb-[22px]">
+            Log in to keep tailoring your resume.
+          </p>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-[14px]">
+            {error && (
+              <p className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 p-3 text-sm text-red-700 dark:text-red-300">
+                {error}
+              </p>
+            )}
+            <div>
+              <label className="block text-[12px] mb-[5px] text-text-secondary" htmlFor="email">
+                Email
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@email.com"
+                className="w-full min-h-[36px] px-[10px] py-[6px] text-[14px] text-text-primary bg-bg border border-border-hairline rounded-lg outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-[12px] mb-[5px] text-text-secondary" htmlFor="password">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full min-h-[36px] px-[10px] py-[6px] text-[14px] text-text-primary bg-bg border border-border-hairline rounded-lg outline-none"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-1 inline-flex items-center justify-center gap-[6px] w-full px-4 py-[9px] border border-accent rounded-lg bg-transparent text-accent text-sm font-medium cursor-pointer disabled:opacity-50"
+            >
+              {loading ? "Logging in..." : "Log in"}
+            </button>
+          </form>
+
+          <p className="text-[13px] text-text-secondary mt-[18px] text-left">
+            New here?{" "}
+            <a href="/signup" className="text-accent no-underline">
+              Create an account
+            </a>
+          </p>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-lg bg-blue-600 text-white py-2 text-sm font-medium disabled:opacity-50"
-        >
-          {loading ? "Logging in..." : "Log in"}
-        </button>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-          No account? <a href="/signup" className="text-blue-600">Sign up</a>
-        </p>
-      </form>
+      </div>
     </div>
   );
 }
