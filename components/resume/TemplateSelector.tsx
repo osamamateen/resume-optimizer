@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { IconCheck } from "@tabler/icons-react";
 import { authFetch } from "@/lib/auth/authFetch";
 import { TemplatePreviewModal } from "@/components/resume/TemplatePreviewModal";
+import { Spinner } from "@/components/Spinner";
 
 interface TemplateOption {
   id: string;
@@ -125,7 +126,12 @@ export function TemplateSelector({ selectedTemplateId, onSelect }: TemplateSelec
   }, []);
 
   if (loading) {
-    return <p className="text-sm text-text-secondary">Loading templates...</p>;
+    return (
+      <div className="flex items-center gap-2 text-sm text-text-secondary">
+        <Spinner />
+        Loading templates...
+      </div>
+    );
   }
 
   const previewTemplate = templates.find((t) => t.id === previewTemplateId) ?? null;

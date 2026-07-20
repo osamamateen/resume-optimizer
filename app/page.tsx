@@ -8,6 +8,7 @@ import { authFetch } from "@/lib/auth/authFetch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MasterResumeControl } from "@/components/MasterResumeControl";
 import { AppHeader } from "@/components/AppHeader";
+import { Spinner } from "@/components/Spinner";
 
 interface ApplicationSummary {
   id: string;
@@ -94,7 +95,12 @@ export default function Home() {
           <MasterResumeControl />
         </div>
 
-        {applications === null && <p className="text-sm text-text-secondary">Loading...</p>}
+        {applications === null && (
+          <div className="flex items-center justify-center gap-2 py-8 text-sm text-text-secondary">
+            <Spinner />
+            Loading applications...
+          </div>
+        )}
 
         {applications !== null && total > 0 && (
           <div className="grid gap-[11px] mb-6 grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">

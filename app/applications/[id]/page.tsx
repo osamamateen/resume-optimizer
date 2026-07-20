@@ -7,6 +7,7 @@ import { ScoringView } from "@/components/ScoringView";
 import { LoadingView } from "@/components/LoadingView";
 import { AppHeader } from "@/components/AppHeader";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { Spinner } from "@/components/Spinner";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
 import type { ResumeData } from "@/types/resume.types";
@@ -99,7 +100,12 @@ export default function ApplicationDetailPage() {
           </p>
         )}
 
-        {!application && !error && <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>}
+        {!application && !error && (
+          <div className="flex items-center justify-center gap-2 py-8 text-sm text-text-secondary">
+            <Spinner />
+            Loading...
+          </div>
+        )}
 
         {application && optimizing && <LoadingView variant="optimizing" />}
 
