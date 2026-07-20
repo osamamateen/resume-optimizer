@@ -1,13 +1,10 @@
 "use client";
 
-import { IconArrowLeft, IconSparkles } from "@tabler/icons-react";
-
 interface JobDescriptionStepProps {
   jobDescription: string;
   onChange: (value: string) => void;
   onBack: () => void;
   onSubmit: () => void;
-  loading: boolean;
 }
 
 export function JobDescriptionStep({
@@ -15,51 +12,42 @@ export function JobDescriptionStep({
   onChange,
   onBack,
   onSubmit,
-  loading,
 }: JobDescriptionStepProps) {
   return (
-    <div className="space-y-4">
-      <div>
-        <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">
-          Job description
-        </p>
-        <p className="text-sm text-gray-400 dark:text-gray-500 mb-3">
-          Paste the full job description. The more detail the better.
-        </p>
-        <textarea
-          className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 p-3 min-h-[120px] sm:min-h-[144px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow resize-y"
-          placeholder="Paste the job description here — include role title, responsibilities, and requirements..."
-          value={jobDescription}
-          onChange={(e) => onChange(e.target.value)}
-        />
+    <div className="max-w-[600px] mx-auto">
+      <div className="text-[11px] tracking-wide text-accent uppercase mb-[6px]">Job description</div>
+      <div className="text-2xl font-medium mb-2 tracking-[-0.015em] text-text-primary">Paste the job description</div>
+      <div className="text-[13.5px] text-text-secondary mb-[18px]">
+        The more detail you give us, the sharper the scoring.
       </div>
-      <div className="flex gap-3">
+      <textarea
+        placeholder="Paste the job description here — role, responsibilities, requirements..."
+        value={jobDescription}
+        onChange={(e) => onChange(e.target.value)}
+        rows={10}
+        className="w-full min-h-[90px] px-[14px] py-3 text-text-primary bg-surface border border-border-hairline rounded-lg outline-none resize-y text-[14.5px] leading-[1.55]"
+      />
+      <div className="flex justify-between mt-[18px]">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-[44px]"
+          className="flex items-center gap-[7px] px-4 py-[9px] border border-border-hairline rounded-lg bg-transparent text-text-primary text-sm cursor-pointer"
         >
-          <IconArrowLeft size={16} /> Back
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+            <path d="M11 6.5H2M6 2.5l-4 4 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          Back
         </button>
         <button
           type="button"
-          disabled={!jobDescription.trim() || loading}
+          disabled={!jobDescription.trim()}
           onClick={onSubmit}
-          className="ml-auto inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors min-h-[44px]"
+          className="flex items-center gap-2 px-[18px] py-[9px] border border-accent rounded-lg bg-transparent text-accent text-sm font-medium disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer"
         >
-          {loading ? (
-            <>
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-              </svg>
-              Optimizing...
-            </>
-          ) : (
-            <>
-              <IconSparkles size={16} /> Optimize
-            </>
-          )}
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M7 1l1.2 3.8L12 6l-3.8 1.2L7 11l-1.2-3.8L2 6l3.8-1.2L7 1z" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" />
+          </svg>
+          Score my resume
         </button>
       </div>
     </div>
