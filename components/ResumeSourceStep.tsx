@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { IconFileUpload, IconFileTypePdf, IconCheck, IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
+import { IconFileUpload, IconCheck, IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
 
 export type ResumeSource =
   | { useMaster: true }
@@ -52,75 +52,124 @@ export function ResumeSourceStep({ masterResumeFileName, onBack, onNext }: Resum
   }
 
   return (
-    <div className="space-y-4">
-      <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Resume</p>
+    <div className="max-w-[480px] mx-auto">
+      <div className="text-[11px] tracking-wide text-accent uppercase mb-[6px]">Resume</div>
+      <div className="text-2xl font-medium mb-6 tracking-[-0.015em] text-text-primary">Which resume should we score?</div>
 
-      {hasMaster && (
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-            <input type="radio" name="resumeSource" checked={!useUpload} onChange={() => setUseUpload(false)} />
-            Use my master resume ({masterResumeFileName})
+      <div className="flex flex-col gap-[11px]">
+        {hasMaster && (
+          <label
+            className={`flex items-center gap-3 px-[15px] py-[13px] rounded-lg cursor-pointer ${
+              !useUpload ? "bg-surface shadow-[0_0_0_1px_var(--color-accent)]" : "shadow-[0_0_0_1px_var(--color-border-hairline)]"
+            }`}
+          >
+            <input type="radio" name="resumeSource" checked={!useUpload} onChange={() => setUseUpload(false)} className="sr-only" />
+            <span
+              className={`w-4 h-4 rounded-full border-[1.5px] shrink-0 ${
+                !useUpload ? "border-accent bg-accent shadow-[inset_0_0_0_3px_var(--color-bg)]" : "border-border-hairline"
+              }`}
+            />
+            <span className="text-sm text-text-primary">
+              Use my master resume — <span className="text-text-secondary">{masterResumeFileName}</span>
+            </span>
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-            <input type="radio" name="resumeSource" checked={useUpload} onChange={() => setUseUpload(true)} />
-            Upload a different resume for this application
-          </label>
-        </div>
-      )}
+        )}
 
-      {showUpload && (
-        <div className="space-y-3">
-          {file ? (
-            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center gap-3">
-              <IconFileTypePdf className="text-blue-600 shrink-0" size={24} />
-              <div className="min-w-0 flex-1">
-                <p className="font-medium text-sm truncate text-gray-900 dark:text-white">{file.name}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500">{formatBytes(file.size)} · ready to optimize</p>
-              </div>
-              <IconCheck className="text-green-500 shrink-0" size={20} />
-            </div>
-          ) : (
+        <label
+          className={`flex items-center gap-3 px-[15px] py-[13px] rounded-lg cursor-pointer ${
+            useUpload ? "bg-surface shadow-[0_0_0_1px_var(--color-accent)]" : "shadow-[0_0_0_1px_var(--color-border-hairline)]"
+          }`}
+        >
+          <input type="radio" name="resumeSource" checked={useUpload} onChange={() => setUseUpload(true)} className="sr-only" />
+          <span
+            className={`w-4 h-4 rounded-full border-[1.5px] shrink-0 ${
+              useUpload ? "border-accent bg-accent shadow-[inset_0_0_0_3px_var(--color-bg)]" : "border-border-hairline"
+            }`}
+          />
+          <span className="text-sm text-text-primary">Upload a different resume for this application</span>
+        </label>
+
+        {showUpload && (
+          <>
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-xl p-6 sm:p-10 text-center bg-gray-50 dark:bg-gray-800 cursor-pointer transition-colors ${
-                isDragActive ? "border-blue-500 bg-blue-50 dark:bg-blue-950" : "border-gray-300 dark:border-gray-700 hover:border-blue-500"
+              className={`border border-dashed rounded-lg px-5 py-[26px] text-center bg-surface-alt cursor-pointer ${
+                isDragActive ? "border-accent" : "border-border-dashed"
               }`}
             >
               <input {...getInputProps()} />
-              <IconFileUpload className="mx-auto text-gray-400 dark:text-gray-500 mb-3" size={28} />
-              <p className="font-medium text-sm text-gray-700 dark:text-gray-300">Drop your resume here</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">PDF or DOCX · up to 5MB</p>
-              <div className="inline-flex items-center gap-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-1 text-xs text-gray-600 dark:text-gray-400 mt-3">
-                Browse files
-              </div>
+              {file ? (
+                <>
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" className="mx-auto mb-[10px] text-accent">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" />
+                    <path d="M8 12.5l2.5 2.5L16 9.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <div className="text-sm text-text-primary">{file.name}</div>
+                  <div className="text-xs text-text-secondary mt-1">{formatBytes(file.size)}</div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFile(null);
+                    }}
+                    className="text-[12.5px] text-accent mt-1 cursor-pointer bg-transparent border-none"
+                  >
+                    Choose a different file
+                  </button>
+                </>
+              ) : (
+                <>
+                  <IconFileUpload size={22} className="mx-auto mb-[10px] text-text-secondary" />
+                  <div className="text-sm text-text-primary mb-[2px]">Drop your resume here</div>
+                  <div className="text-xs text-text-secondary mb-[14px]">PDF or DOCX · up to 5MB</div>
+                  <span className="inline-block px-[14px] py-[7px] border border-border-hairline rounded-lg text-[13px] text-text-primary">
+                    Browse files
+                  </span>
+                </>
+              )}
             </div>
-          )}
 
-          {!hasMaster && (
-            <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-              <input type="checkbox" checked={saveAsMaster} onChange={(e) => setSaveAsMaster(e.target.checked)} />
-              Save as my master resume
-            </label>
-          )}
+            {!hasMaster && (
+              <label className="flex items-center gap-2 pl-[2px] cursor-pointer">
+                <span
+                  onClick={() => setSaveAsMaster((v) => !v)}
+                  className={`w-[15px] h-[15px] rounded-[3px] border-[1.5px] flex items-center justify-center shrink-0 ${
+                    saveAsMaster ? "border-accent bg-accent" : "border-border-hairline"
+                  }`}
+                >
+                  {saveAsMaster && <IconCheck size={9} className="text-bg" strokeWidth={3} />}
+                </span>
+                <input
+                  type="checkbox"
+                  checked={saveAsMaster}
+                  onChange={(e) => setSaveAsMaster(e.target.checked)}
+                  className="sr-only"
+                />
+                <span className="text-[13px] text-text-secondary">Save this as my new master resume</span>
+              </label>
+            )}
+          </>
+        )}
+
+        <div className="flex justify-between mt-[8px]">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex items-center gap-[7px] px-4 py-[9px] border border-border-hairline rounded-lg bg-transparent text-text-primary text-sm cursor-pointer"
+          >
+            <IconArrowLeft size={13} />
+            Back
+          </button>
+          <button
+            type="button"
+            disabled={!canProceed}
+            onClick={handleNext}
+            className="flex items-center gap-[7px] px-[18px] py-[9px] border border-accent rounded-lg bg-transparent text-accent text-sm font-medium disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer"
+          >
+            Next
+            <IconArrowRight size={13} />
+          </button>
         </div>
-      )}
-
-      <div className="flex gap-3">
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-gray-700 px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors min-h-[44px]"
-        >
-          <IconArrowLeft size={16} /> Back
-        </button>
-        <button
-          type="button"
-          disabled={!canProceed}
-          onClick={handleNext}
-          className="ml-auto inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white font-medium disabled:opacity-50 hover:bg-blue-700 transition-colors min-h-[44px]"
-        >
-          Next <IconArrowRight size={16} />
-        </button>
       </div>
     </div>
   );
