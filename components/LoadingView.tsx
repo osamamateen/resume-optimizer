@@ -3,22 +3,34 @@
 import { useEffect, useState } from "react";
 import { IconSparkles } from "@tabler/icons-react";
 
-const MESSAGES = [
-  "Analyzing job description...",
-  "Identifying key requirements...",
-  "Scanning your resume...",
-  "Matching skills and keywords...",
-  "Tailoring your experience sections...",
-  "Scoring ATS compatibility...",
-  "Finalizing optimizations...",
+const SCORING_MESSAGES = [
+  "Reading your resume...",
+  "Parsing sections...",
+  "Comparing against the job description...",
+  "Identifying keyword gaps...",
+  "Calculating ATS alignment...",
+];
+
+const OPTIMIZING_MESSAGES = [
+  "Reviewing suggested improvements...",
+  "Rewriting bullet points...",
+  "Weaving in missing keywords...",
+  "Polishing your summary...",
+  "Finalizing your optimized resume...",
 ];
 
 const BASE_RATE = 1.2;
 const MAX_PROGRESS = 88;
 
-export function LoadingView() {
+interface LoadingViewProps {
+  variant: "scoring" | "optimizing";
+}
+
+export function LoadingView({ variant }: LoadingViewProps) {
   const [progress, setProgress] = useState(0);
   const [messageIndex, setMessageIndex] = useState(0);
+
+  const messages = variant === "scoring" ? SCORING_MESSAGES : OPTIMIZING_MESSAGES;
 
   useEffect(() => {
     const progressInterval = setInterval(() => {
@@ -30,39 +42,46 @@ export function LoadingView() {
     }, 150);
 
     const messageInterval = setInterval(() => {
-      setMessageIndex((prev) => (prev + 1) % MESSAGES.length);
+      setMessageIndex((prev) => (prev + 1) % messages.length);
     }, 2500);
 
     return () => {
       clearInterval(progressInterval);
       clearInterval(messageInterval);
     };
-  }, []);
+  }, [messages]);
+
+  const title = variant === "scoring" ? "Scoring your resume" : "Optimizing your resume";
+  const subtitle = variant === "scoring" ? "This usually takes 10–15 seconds." : "Rewriting content to match the role.";
 
   return (
     <div className="flex flex-col items-center justify-center py-20 space-y-6">
       <div className="flex flex-col items-center space-y-2">
-        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-950 flex items-center justify-center">
-          <IconSparkles size={20} className="text-blue-600 dark:text-blue-400" />
-        </div>
-        <h2 className="text-lg font-medium text-gray-900 dark:text-white">Optimizing your resume</h2>
-        <p className="text-sm text-gray-400 dark:text-gray-500">This usually takes 10–15 seconds</p>
+        {variant === "scoring" ? (
+          <div className="w-12 h-12 rounded-full border-[2.5px] border-border-hairline border-t-accent animate-spin" />
+        ) : (
+          <div className="w-12 h-12 rounded-xl border border-accent-surface flex items-center justify-center">
+            <IconSparkles size={20} className="text-accent animate-pulse" />
+          </div>
+        )}
+        <h2 className="text-lg font-medium text-text-primary mt-2">{title}</h2>
+        <p className="text-sm text-text-secondary">{subtitle}</p>
       </div>
 
-      <div className="w-full max-w-sm space-y-2">
+      <div className="w-full max-w-[380px] mx-auto space-y-2">
         <div className="flex items-center gap-3">
-          <div className="flex-1 h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+          <div className="flex-1 h-2 bg-chip-neutral-bg rounded-full overflow-hidden">
             <div
-              className="h-full bg-blue-600 rounded-full transition-all duration-150 ease-linear"
+              className="h-full bg-accent rounded-full transition-all duration-150 ease-linear"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <span className="text-xs text-gray-400 dark:text-gray-500 tabular-nums w-8 text-right">
+          <span className="text-xs text-text-secondary tabular-nums w-8 text-right">
             {Math.round(progress)}%
           </span>
         </div>
 
-        <p className="text-sm text-gray-500 dark:text-gray-400 italic text-center">{MESSAGES[messageIndex]}</p>
+        <p className="text-sm text-text-secondary italic text-center">{messages[messageIndex]}</p>
       </div>
     </div>
   );
