@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     throw err;
   }
 
-  const applications = await prisma.application.findMany({
+  const rows = await prisma.application.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
     select: {
@@ -24,8 +24,14 @@ export async function GET(req: NextRequest) {
       roleTitle: true,
       atsScore: true,
       createdAt: true,
+      resumeData: true,
     },
   });
+
+  const applications = rows.map(({ resumeData, ...rest }) => ({
+    ...rest,
+    optimized: resumeData !== null,
+  }));
 
   return NextResponse.json({ applications });
 }
