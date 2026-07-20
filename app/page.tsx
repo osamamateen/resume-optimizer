@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconChevronRight, IconFileText } from "@tabler/icons-react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MasterResumeControl } from "@/components/MasterResumeControl";
+import { AppHeader } from "@/components/AppHeader";
 
 interface ApplicationSummary {
   id: string;
@@ -14,6 +15,7 @@ interface ApplicationSummary {
   roleTitle: string;
   atsScore: number;
   createdAt: string;
+  optimized: boolean;
 }
 
 export default function Home() {
@@ -43,72 +45,133 @@ export default function Home() {
     return null;
   }
 
+  const apps = applications ?? [];
+  const total = apps.length;
+  const avgScore = total > 0 ? Math.round(apps.reduce((sum, a) => sum + a.atsScore, 0) / total) : 0;
+  const optimizedCount = apps.filter((a) => a.optimized).length;
+
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      <header className="border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <span className="font-medium text-gray-900 dark:text-white">
-            Resume<span className="text-blue-600">Tailor</span>
-          </span>
+    <div className="min-h-screen bg-bg text-text-primary">
+      <AppHeader
+        rightSlot={
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => logout().then(() => router.push("/login"))}
-              className="text-sm text-gray-400 hover:text-gray-600"
+              className="border-none bg-transparent text-text-secondary text-[13.5px] cursor-pointer"
             >
               Log out
             </button>
             <ThemeToggle />
           </div>
-        </div>
-      </header>
+        }
+      />
 
-      <main className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
+      <main className="max-w-[760px] px-[clamp(24px,6vw,64px)] pt-7 pb-[72px]">
+        <div className="flex items-baseline justify-between flex-wrap gap-[14px] mb-6">
+          <div>
+            <div className="text-[26px] font-medium tracking-[-0.015em]">Your applications</div>
+            <div className="text-[13.5px] text-text-secondary mt-[3px]">
+              Track ATS alignment across every role you apply to.
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => router.push("/applications/new")}
+            className="flex items-center gap-[7px] px-4 py-[9px] border border-accent rounded-lg bg-transparent text-accent text-sm font-medium cursor-pointer whitespace-nowrap"
+          >
+            <IconPlus size={14} /> New application
+          </button>
+        </div>
+
         {error && (
-          <p className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 p-3 text-sm text-red-700 dark:text-red-300">
+          <p className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-100 dark:border-red-900 p-3 text-sm text-red-700 dark:text-red-300 mb-6">
             {error}
           </p>
         )}
 
-        <MasterResumeControl />
-
-        <div className="flex items-center justify-between">
-          <p className="text-[11px] uppercase tracking-widest text-gray-400 dark:text-gray-500">Applications</p>
-          <button
-            type="button"
-            onClick={() => router.push("/applications/new")}
-            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm text-white font-medium hover:bg-blue-700 transition-colors min-h-[44px]"
-          >
-            <IconPlus size={16} /> New application
-          </button>
+        <div className="mb-6">
+          <MasterResumeControl />
         </div>
 
-        {applications === null && <p className="text-sm text-gray-400 dark:text-gray-500">Loading...</p>}
+        {applications === null && <p className="text-sm text-text-secondary">Loading...</p>}
 
-        {applications !== null && applications.length === 0 && (
-          <p className="text-sm text-gray-400 dark:text-gray-500">No applications yet. Start by creating a new one.</p>
+        {applications !== null && total > 0 && (
+          <div className="grid gap-[11px] mb-6 grid-cols-[repeat(auto-fit,minmax(150px,1fr))]">
+            <div className="bg-surface rounded-lg px-4 py-[14px]">
+              <div className="text-[10.5px] tracking-wide text-text-secondary uppercase">Applications</div>
+              <div className="text-2xl font-medium mt-1">{total}</div>
+            </div>
+            <div className="bg-surface rounded-lg px-4 py-[14px]">
+              <div className="text-[10.5px] tracking-wide text-text-secondary uppercase">Average score</div>
+              <div className="text-2xl font-medium mt-1">
+                {avgScore}
+                <span className="text-[13px] text-text-secondary">/100</span>
+              </div>
+            </div>
+            <div className="bg-surface rounded-lg px-4 py-[14px]">
+              <div className="text-[10.5px] tracking-wide text-text-secondary uppercase">Optimized</div>
+              <div className="text-2xl font-medium mt-1">
+                {optimizedCount}
+                <span className="text-[13px] text-text-secondary"> / {total}</span>
+              </div>
+            </div>
+          </div>
         )}
 
-        {applications !== null && applications.length > 0 && (
-          <div className="space-y-2">
-            {applications.map((app) => (
+        {applications !== null && total > 0 && (
+          <div className="flex flex-col gap-[9px]">
+            {apps.map((app) => (
               <button
                 key={app.id}
                 type="button"
                 onClick={() => router.push(`/applications/${app.id}`)}
-                className="w-full text-left bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3 flex items-center justify-between hover:border-blue-500 transition-colors"
+                className="w-full text-left bg-surface rounded-lg px-[18px] py-[15px] flex items-center justify-between gap-4 flex-wrap cursor-pointer"
               >
-                <div className="min-w-0">
-                  <p className="font-medium text-sm text-gray-900 dark:text-white truncate">
-                    {app.roleTitle} · {app.companyName}
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                <div className="flex flex-col gap-[5px] min-w-0">
+                  <div className="flex items-center gap-[9px] flex-wrap">
+                    <span className="text-[15px] font-medium">{app.roleTitle}</span>
+                    <span className="text-[13px] text-text-secondary">· {app.companyName}</span>
+                    <span
+                      className={`text-[10.5px] tracking-wide uppercase px-[10px] py-[3px] rounded-md ${
+                        app.optimized ? "bg-accent-surface text-accent-surface-text" : "bg-chip-neutral-bg text-chip-neutral-text"
+                      }`}
+                    >
+                      {app.optimized ? "Optimized" : "Scored"}
+                    </span>
+                  </div>
+                  <div className="text-[12.5px] text-text-secondary">
                     {new Date(app.createdAt).toLocaleDateString()}
-                  </p>
+                  </div>
                 </div>
-                <span className="text-sm font-medium text-green-600 shrink-0 ml-3">{app.atsScore}/100</span>
+                <div className="flex items-center gap-[10px] shrink-0">
+                  <div className="text-[18px] font-medium text-text-primary">
+                    {app.atsScore}
+                    <span className="text-xs text-text-secondary">/100</span>
+                  </div>
+                  <IconChevronRight size={15} className="text-text-secondary" />
+                </div>
               </button>
             ))}
+          </div>
+        )}
+
+        {applications !== null && total === 0 && (
+          <div className="text-left p-8 border border-border-hairline rounded-card bg-surface-alt">
+            <div className="w-[38px] h-[38px] rounded-[10px] bg-surface flex items-center justify-center mb-[14px]">
+              <IconFileText size={18} className="text-text-secondary" />
+            </div>
+            <div className="text-base font-medium mb-1">No applications yet</div>
+            <div className="text-[13.5px] text-text-secondary mb-4">
+              Start your first one and see how your resume scores.
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push("/applications/new")}
+              className="border border-accent bg-transparent text-accent px-4 py-2 rounded-lg text-[13.5px] font-medium cursor-pointer"
+            >
+              New application
+            </button>
           </div>
         )}
       </main>
