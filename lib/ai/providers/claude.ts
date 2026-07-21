@@ -66,19 +66,43 @@ export class ClaudeProvider implements AiProvider {
   }
 
   async optimizeResume(request: OptimizeRequest): Promise<OptimizationResult> {
+    const overallStart = performance.now();
+
     const userContent = JSON.stringify({
       jobDescription: request.jobDescription,
       sections: request.sections,
     });
+
+    console.log("[Claude][Optimize] Starting request");
+    console.log({
+      model: MODEL,
+      jobDescriptionChars: request.jobDescription.length,
+      sections: request.sections.length,
+      payloadChars: userContent.length,
+    });
+
+    const llmStart = performance.now();
 
     const response = await this.client.messages.create({
       model: MODEL,
       max_tokens: 16000,
       system: SYSTEM_PROMPT,
       output_config: {
-        format: { type: "json_schema", schema: buildOutputSchema(optimizationResultSchema) },
+        format: {
+          type: "json_schema",
+          schema: buildOutputSchema(optimizationResultSchema),
+        },
       },
       messages: [{ role: "user", content: userContent }],
+    });
+
+    const llmTime = performance.now() - llmStart;
+
+    console.log("[Claude][Optimize] Response received");
+    console.log({
+      llmTimeMs: Math.round(llmTime),
+      stopReason: response.stop_reason,
+      usage: response.usage,
     });
 
     if (response.stop_reason === "max_tokens") {
@@ -87,28 +111,72 @@ export class ClaudeProvider implements AiProvider {
       );
     }
 
-    const textBlock = response.content.find((block) => block.type === "text");
+    const parseStart = performance.now();
+
+    const textBlock = response.content.find(
+      (block) => block.type === "text"
+    );
+
     if (!textBlock || textBlock.type !== "text") {
-      throw new Error("Claude did not return a text block with the optimization result");
+      throw new Error(
+        "Claude did not return a text block with the optimization result"
+      );
     }
 
-    return optimizationResultSchema.parse(JSON.parse(textBlock.text));
+    const parsed = optimizationResultSchema.parse(
+      JSON.parse(textBlock.text)
+    );
+
+    const parseTime = performance.now() - parseStart;
+    const totalTime = performance.now() - overallStart;
+
+    console.log("[Claude][Optimize] Complete");
+    console.log({
+      parseTimeMs: Math.round(parseTime),
+      totalTimeMs: Math.round(totalTime),
+    });
+
+    return parsed;
   }
 
   async scoreResume(request: OptimizeRequest): Promise<ScoreResult> {
+    const overallStart = performance.now();
+
     const userContent = JSON.stringify({
       jobDescription: request.jobDescription,
       sections: request.sections,
     });
+
+    console.log("[Claude][Score] Starting request");
+    console.log({
+      model: MODEL,
+      jobDescriptionChars: request.jobDescription.length,
+      sections: request.sections.length,
+      payloadChars: userContent.length,
+    });
+
+    const llmStart = performance.now();
 
     const response = await this.client.messages.create({
       model: MODEL,
       max_tokens: 4000,
       system: SCORE_SYSTEM_PROMPT,
       output_config: {
-        format: { type: "json_schema", schema: buildOutputSchema(scoreResultSchema) },
+        format: {
+          type: "json_schema",
+          schema: buildOutputSchema(scoreResultSchema),
+        },
       },
       messages: [{ role: "user", content: userContent }],
+    });
+
+    const llmTime = performance.now() - llmStart;
+
+    console.log("[Claude][Score] Response received");
+    console.log({
+      llmTimeMs: Math.round(llmTime),
+      stopReason: response.stop_reason,
+      usage: response.usage,
     });
 
     if (response.stop_reason === "max_tokens") {
@@ -117,11 +185,31 @@ export class ClaudeProvider implements AiProvider {
       );
     }
 
-    const textBlock = response.content.find((block) => block.type === "text");
+    const parseStart = performance.now();
+
+    const textBlock = response.content.find(
+      (block) => block.type === "text"
+    );
+
     if (!textBlock || textBlock.type !== "text") {
-      throw new Error("Claude did not return a text block with the score result");
+      throw new Error(
+        "Claude did not return a text block with the score result"
+      );
     }
 
-    return scoreResultSchema.parse(JSON.parse(textBlock.text));
+    const parsed = scoreResultSchema.parse(
+      JSON.parse(textBlock.text)
+    );
+
+    const parseTime = performance.now() - parseStart;
+    const totalTime = performance.now() - overallStart;
+
+    console.log("[Claude][Score] Complete");
+    console.log({
+      parseTimeMs: Math.round(parseTime),
+      totalTimeMs: Math.round(totalTime),
+    });
+
+    return parsed;
   }
 }
