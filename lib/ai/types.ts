@@ -9,7 +9,6 @@ export const sectionInputSchema = z.object({
 export type SectionInput = z.infer<typeof sectionInputSchema>;
 
 export const optimizationResultSchema = z.object({
-  sections: z.array(z.object({ id: z.string(), optimizedText: z.string() })),
   atsScore: z.number().min(0).max(100),
   matchedKeywords: z.array(z.string()),
   missingKeywords: z.array(z.string()),

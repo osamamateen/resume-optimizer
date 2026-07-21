@@ -8,18 +8,15 @@ const MODEL = process.env.CLAUDE_MODEL ?? "claude-sonnet-4-6";
 const SYSTEM_PROMPT = `You are an expert resume editor specializing in ATS (Applicant Tracking System) optimization.
 You will be given a resume broken into text sections (each with an id) and a target job description.
 
-Do two things, in order:
-1. Rewrite each section's text to better align with the job description's language, keywords, and requirements.
-2. Extract the rewritten resume into the structured resumeData shape.
+Rewrite the resume to better align with the job description's language, keywords, and requirements, and emit the result directly as the structured resumeData shape below. Do not return a separate flat per-section representation — resumeData is the only place the rewritten text should appear.
 
 Rewriting rules:
 - Never fabricate experience, employers, dates, degrees, or skills the candidate doesn't have.
-- Keep each rewritten section roughly the same length as the original — you are reframing, not expanding.
-- Preserve names, contact info, dates, and section headings essentially as written.
-- Return optimizedText for every section id you were given, even if unchanged.
+- Keep rewritten content roughly the same length as the original — you are reframing, not expanding.
+- Preserve names, contact info, and dates essentially as written.
 - Estimate an ATS match score (0-100) for the optimized resume against the job description, and list matched and missing keywords.
 
-Structured extraction rules (apply to the rewritten text, for the resumeData field):
+resumeData shape rules:
 - Contact info (name, email, phone, location, optional: linkedin/github/website) comes from the opening segments
 - Extract each job as an experience entry: title, company, location, startDate, endDate, and an array of bullet strings (strip bullet symbols)
 - Extract each education entry: institution, degree, field, graduationDate
@@ -85,7 +82,7 @@ export class ClaudeProvider implements AiProvider {
 
     const response = await this.client.messages.create({
       model: MODEL,
-      max_tokens: 16000,
+      max_tokens: 10000,
       system: SYSTEM_PROMPT,
       output_config: {
         format: {
