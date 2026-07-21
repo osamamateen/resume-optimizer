@@ -1,7 +1,8 @@
 import type { AiProvider, OptimizeRequest, OptimizationResult, ScoreResult } from "../types";
-import { optimizationResultSchema, scoreResultSchema } from "../types";
+import { scoreResultSchema } from "../types";
 import { ResumeDataSchema } from "../../../types/resume.types";
 import type { ResumeData } from "../../../types/resume.types";
+import { z } from "zod";
 
 const BASE_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = process.env.OPENROUTER_MODEL ?? "meta-llama/llama-3.3-70b-instruct:free";
@@ -45,7 +46,16 @@ The JSON must match this exact structure:
   "suggestions": { "headline": "string", "bullets": ["string"] }
 }`;
 
-const rewriteResultSchema = optimizationResultSchema.omit({ resumeData: true });
+const rewriteResultSchema = z.object({
+  sections: z.array(z.object({ id: z.string(), optimizedText: z.string() })),
+  atsScore: z.number().min(0).max(100),
+  matchedKeywords: z.array(z.string()),
+  missingKeywords: z.array(z.string()),
+  summaryOfChanges: z.object({
+    headline: z.string(),
+    bullets: z.array(z.string()),
+  }),
+});
 
 export class OpenRouterProvider implements AiProvider {
   private apiKey: string;
@@ -99,7 +109,13 @@ export class OpenRouterProvider implements AiProvider {
     const rewritten = rewriteResultSchema.parse(JSON.parse(content));
     const resumeData = await this.extractStructuredResume(rewritten.sections);
 
-    return { ...rewritten, resumeData };
+    return {
+      atsScore: rewritten.atsScore,
+      matchedKeywords: rewritten.matchedKeywords,
+      missingKeywords: rewritten.missingKeywords,
+      summaryOfChanges: rewritten.summaryOfChanges,
+      resumeData,
+    };
   }
 
   async scoreResume(request: OptimizeRequest): Promise<ScoreResult> {
