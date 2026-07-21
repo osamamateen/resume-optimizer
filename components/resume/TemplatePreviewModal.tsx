@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 interface TemplatePreviewModalProps {
   templateName: string;
@@ -25,11 +26,13 @@ export function TemplatePreviewModal({ templateName, onClose, onUseTemplate }: T
         </div>
 
         <div className="rounded-lg bg-surface-alt border border-border-hairline flex flex-col items-center justify-center gap-2 py-16 px-6">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <rect x="3" y="2" width="14" height="16" rx="2" className="stroke-text-secondary" strokeWidth="1.5" />
-            <path d="M6.5 7h7M6.5 10.5h7M6.5 14h4" className="stroke-text-secondary" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          <p className="text-sm text-text-secondary">Preview coming soon</p>
+          <Image
+            src="/templates/modern/full-preview.png"
+            alt="Resume template preview"
+            width={600}
+            height={800}
+            className="w-full h-auto object-contain"
+          />
         </div>
 
         <button

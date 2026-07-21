@@ -8,13 +8,13 @@ const templates: Record<string, TemplateDefinition> = {
     thumbnail: "/templates/modern/preview.png",
     templatePath: "lib/templates/modern/template.hbs",
   },
-  minimal: {
-    id: "minimal",
-    name: "Minimal",
-    description: "Pure black and white, maximum whitespace, traditional structure",
-    thumbnail: "/templates/minimal/preview.png",
-    templatePath: "lib/templates/minimal/template.hbs",
-  },
+  // minimal: {
+  //   id: "minimal",
+  //   name: "Minimal",
+  //   description: "Pure black and white, maximum whitespace, traditional structure",
+  //   thumbnail: "/templates/minimal/preview.png",
+  //   templatePath: "lib/templates/minimal/template.hbs",
+  // },
 };
 
 export function getTemplate(id: string): TemplateDefinition {

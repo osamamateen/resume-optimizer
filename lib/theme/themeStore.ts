@@ -9,7 +9,7 @@ export function getThemeSnapshot(): boolean {
 }
 
 export function getServerThemeSnapshot(): boolean {
-  return false;
+  return true;
 }
 
 export function subscribeTheme(listener: () => void): () => void {

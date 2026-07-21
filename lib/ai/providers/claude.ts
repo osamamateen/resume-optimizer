@@ -21,6 +21,7 @@ resumeData shape rules:
 - Extract each job as an experience entry: title, company, location, startDate, endDate, and an array of bullet strings (strip bullet symbols)
 - Extract each education entry: institution, degree, field, graduationDate
 - If projects exist, extract them with name, description, technologies array, and bullets array
+- Do not write more than 7 bullets per section.
 - If a skills section exists, classify into languages, frameworks, tools, other (each an array of strings)
 - If any other section exists that doesn't fit the schema, add it as a customSections entry with label and content
 - Dates should be kept as written (e.g. "Jan 2020", "2019 – Present")
