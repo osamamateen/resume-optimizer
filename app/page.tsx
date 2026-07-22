@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { MasterResumeControl } from "@/components/MasterResumeControl";
 import { AppHeader } from "@/components/AppHeader";
 import { Skeleton } from "@/components/Skeleton";
+import { LandingPage } from "@/components/landing/LandingPage";
 
 interface ApplicationSummary {
   id: string;
@@ -26,12 +27,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (ready && !accessToken) {
-      router.push("/login");
-    }
-  }, [ready, accessToken, router]);
-
-  useEffect(() => {
     if (!accessToken) return;
     authFetch("/api/applications")
       .then(async (res) => {
@@ -42,8 +37,12 @@ export default function Home() {
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load applications"));
   }, [accessToken]);
 
-  if (!ready || !accessToken) {
+  if (!ready) {
     return null;
+  }
+
+  if (!accessToken) {
+    return <LandingPage />;
   }
 
   const apps = applications ?? [];
