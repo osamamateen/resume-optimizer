@@ -12,6 +12,7 @@
     "@anthropic-ai/sdk": "^0.104.2",
     "@prisma/client": "^6.19.3",
     "@serwist/next": "^9.5.11",
+    "@sparticuz/chromium": "^149.0.0",
     "@tabler/icons-react": "^3.44.0",
     "bcryptjs": "^3.0.3",
     "fast-xml-parser": "^5.9.0",
@@ -22,7 +23,7 @@
     "next": "16.2.9",
     "pdf-parse": "^1.1.1",
     "prisma": "^6.19.3",
-    "puppeteer": "^25.1.0",
+    "puppeteer-core": "^25.1.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-dropzone": "^15.0.0",
@@ -38,6 +39,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "puppeteer": "^25.1.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
