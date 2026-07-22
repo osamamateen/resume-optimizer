@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { HeroMockup } from "@/components/landing/mockups/HeroMockup";
 
 export function Hero() {
   return (
@@ -25,8 +26,8 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="mt-[clamp(48px,8vw,72px)] rounded-card border border-border-hairline bg-surface shadow-[var(--card-shadow)] aspect-video max-w-[860px] mx-auto flex items-center justify-center">
-        <span className="text-[13px] tracking-wide uppercase text-text-secondary">Product preview</span>
+      <div className="mt-[clamp(48px,8vw,72px)] rounded-card border border-border-hairline bg-surface shadow-[var(--card-shadow)] aspect-auto sm:aspect-video max-w-[860px] mx-auto overflow-hidden">
+        <HeroMockup />
       </div>
     </section>
   );
