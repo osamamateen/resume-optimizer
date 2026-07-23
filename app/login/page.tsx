@@ -4,10 +4,11 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,6 +28,16 @@ export default function LoginPage() {
     }
   }
 
+  async function handleGoogleCredential(idToken: string) {
+    setError(null);
+    try {
+      await loginWithGoogle(idToken);
+      router.push("/");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Google sign-in failed.");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-bg text-text-primary relative flex items-center justify-center p-[6vw]">
       <div className="absolute top-4 right-4">
@@ -43,6 +54,14 @@ export default function LoginPage() {
           <p className="text-[13px] text-text-secondary mb-[22px]">
             Log in to keep tailoring your resume.
           </p>
+
+          <GoogleSignInButton onCredential={handleGoogleCredential} onError={setError} />
+
+          <div className="flex items-center gap-3 my-[18px]">
+            <div className="flex-1 h-px bg-border-hairline" />
+            <span className="text-[12px] text-text-secondary">or</span>
+            <div className="flex-1 h-px bg-border-hairline" />
+          </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-[14px]">
             {error && (
