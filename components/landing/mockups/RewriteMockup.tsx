@@ -79,7 +79,7 @@ export function RewriteMockup() {
             strokeLinejoin="round"
           />
         </svg>
-        Download PDF
+        Export PDF
       </div>
     </div>
   );

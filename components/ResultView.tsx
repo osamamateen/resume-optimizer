@@ -194,7 +194,7 @@ export function ResultView({
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
             <path d="M7.5 1v8M4 6l3.5 3.5L11 6M2.5 12h10" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          {downloading ? "Generating PDF..." : "Download PDF"}
+          {downloading ? "Generating PDF..." : "Export PDF"}
         </button>
         {downloadError && <p className="text-sm text-red-600 dark:text-red-400">{downloadError}</p>}
         <button
