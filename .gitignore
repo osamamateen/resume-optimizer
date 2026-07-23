@@ -43,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# superpowers specs/plans (local working docs, not tracked)
+/docs/superpowers/
