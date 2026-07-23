@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import type { ResumeData } from "@/types/resume.types";
 import { TemplateSelector } from "@/components/resume/TemplateSelector";
 import { authFetch } from "@/lib/auth/authFetch";
@@ -29,6 +31,7 @@ export function ResultView({
   previousMissingKeywords,
   onRestart,
 }: ResultViewProps) {
+  const params = useParams<{ id: string }>();
   const [templateId, setTemplateId] = useState("modern");
   const [downloading, setDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
@@ -167,6 +170,21 @@ export function ResultView({
       </div>
 
       <div className="flex flex-col gap-[9px]">
+        <Link
+          href={`/applications/${params.id}/edit`}
+          className="w-full flex items-center justify-center gap-[9px] px-4 py-3 border border-border-hairline rounded-lg bg-transparent text-text-primary text-[15px] font-medium cursor-pointer"
+        >
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <path
+              d="M2 13h2.2l7-7-2.2-2.2-7 7V13zM10 2.5L12.5 5"
+              stroke="currentColor"
+              strokeWidth="1.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          Edit resume
+        </Link>
         <button
           type="button"
           onClick={handleDownload}
