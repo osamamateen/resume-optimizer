@@ -28,6 +28,7 @@ Copy `.env.local` and fill in real values:
 | `DATABASE_URL` | Yes | — | Postgres connection string (Prisma) |
 | `JWT_ACCESS_SECRET` | Yes | — | Signs/verifies access tokens |
 | `JWT_REFRESH_HASH_SECRET` | Yes | — | Pepper mixed into the refresh-token hash before storage |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Yes | — | Google OAuth Client ID for "Continue with Google" (used both client- and server-side) |
 
 ## Architecture
 
@@ -110,10 +111,11 @@ missing/invalid/expired token always returns
 `{ "error": "Unauthorized" }` with status 401, regardless of the specific
 reason.
 
-- `prisma/schema.prisma` — `User` (email + bcrypt password hash) and
-  `RefreshToken` (hashed, rotated, revocable) models, via `lib/prisma.ts`
-  (a `PrismaClient` singleton, to survive `next dev` hot reloads without
-  exhausting DB connections).
+- `prisma/schema.prisma` — `User` (email + optional bcrypt password hash,
+  since Google-only accounts have none, plus an optional unique `googleId`)
+  and `RefreshToken` (hashed, rotated, revocable) models, via
+  `lib/prisma.ts` (a `PrismaClient` singleton, to survive `next dev` hot
+  reloads without exhausting DB connections).
 - `lib/auth/passwords.ts` — bcrypt hash/verify.
 - `lib/auth/tokens.ts` — signs/verifies the access token: a `jose` JWT,
   15 minute TTL, payload `{ sub: userId }`.
@@ -133,6 +135,18 @@ reason.
 - `app/page.tsx` redirects to `/login` when there's no session (checked
   client-side via `AuthContext`, since tokens live in `localStorage`, not
   cookies — there is no server-side session to check during SSR).
+- `lib/auth/google.ts` — verifies a Google ID token against Google's public
+  keys (`jose`'s `createRemoteJWKSet`, same library as `tokens.ts`); no
+  `google-auth-library` dependency needed.
+- `lib/auth/googleUser.ts` — finds-or-creates a `User` from a verified
+  Google identity. A `googleId` match logs the user in; an `email` match
+  with no `googleId` (an existing password account) is blocked with a 409,
+  not auto-linked.
+- `app/api/auth/google/route.ts` — `POST { idToken }`, issues the same
+  token pair `/login` and `/signup` do.
+- `components/auth/GoogleSignInButton.tsx` — renders Google's own GIS
+  button (loaded via a plain `<script>` tag, no npm package) on both
+  `/login` and `/signup`; both call the same `loginWithGoogle`.
 
 **Prisma is pinned to `6.19.3`.** Prisma 7 removed `datasource.url`
 support in `schema.prisma` in favor of a `prisma.config.ts` +

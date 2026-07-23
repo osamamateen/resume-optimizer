@@ -41,6 +41,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `DATABASE_URL` | Yes | — | Postgres connection string (Prisma). Use a pooled connection if the direct host is IPv6-only on your network (e.g. Supabase's Session/Transaction pooler) |
 | `JWT_ACCESS_SECRET` | Yes | — | Signs/verifies access tokens |
 | `JWT_REFRESH_HASH_SECRET` | Yes | — | Pepper mixed into the refresh-token hash before storage |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Yes | — | Google OAuth Client ID for "Continue with Google" (used both client- and server-side) |
 
 ## Scripts
 
