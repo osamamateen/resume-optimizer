@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MasterResumeControl } from "@/components/MasterResumeControl";
+import { UsageWidget } from "@/components/UsageWidget";
 import { AppHeader } from "@/components/AppHeader";
 import { Skeleton } from "@/components/Skeleton";
 import { LandingPage } from "@/components/landing/LandingPage";
@@ -92,6 +93,10 @@ export default function Home() {
 
         <div className="mb-6">
           <MasterResumeControl />
+        </div>
+
+        <div className="mb-6">
+          <UsageWidget />
         </div>
 
         {applications === null && (
