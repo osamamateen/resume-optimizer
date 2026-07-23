@@ -15,6 +15,7 @@ model User {
   refreshTokens RefreshToken[]
   masterResume  MasterResume?
   applications  Application[]
+  usageEvents   UsageEvent[]
 }
 
 model RefreshToken {
@@ -70,4 +71,14 @@ model Application {
   updatedAt DateTime @updatedAt
 
   @@index([userId, createdAt])
+}
+
+model UsageEvent {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  createdAt DateTime @default(now())
+
+  @@index([userId, action, createdAt])
 }
