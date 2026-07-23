@@ -1,6 +1,6 @@
 # Resume Optimizer
 
-A Next.js app that tailors a resume to a specific job description using an LLM (Claude or OpenRouter), then hands back an updated resume as a PDF and/or DOCX.
+A Next.js app that tailors a resume to a specific job description using an LLM (Claude or OpenRouter), then hands back an updated resume as a PDF.
 
 ## How it works
 
