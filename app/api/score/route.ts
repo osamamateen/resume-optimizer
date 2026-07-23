@@ -7,6 +7,7 @@ import { getAiProvider } from "@/lib/ai/provider";
 import { requireAuth, UnauthorizedError } from "@/lib/auth/requireAuth";
 import { prisma } from "@/lib/prisma";
 import { mockResponse } from "./response";
+import { countUsageToday, recordUsage, DAILY_LIMIT } from "@/lib/services/usage.service";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -49,6 +50,14 @@ export async function POST(req: NextRequest) {
   if(test){
 
     return mockResponse();
+  }
+
+  const scoreUsage = await countUsageToday(userId, "score");
+  if (scoreUsage >= DAILY_LIMIT) {
+    return NextResponse.json(
+      { error: `Daily score limit reached (${DAILY_LIMIT}/${DAILY_LIMIT}). Try again tomorrow.` },
+      { status: 429 }
+    );
   }
 
   if (useMaster) {
@@ -122,6 +131,8 @@ export async function POST(req: NextRequest) {
       missingKeywords: result.missingKeywords,
     },
   });
+
+  await recordUsage(userId, "score");
 
   return NextResponse.json({
     applicationId: application.id,
