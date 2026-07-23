@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { IconPlus, IconChevronRight, IconFileText } from "@tabler/icons-react";
+import { IconPlus, IconChevronRight, IconFileText, IconTrash } from "@tabler/icons-react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -11,6 +11,7 @@ import { UsageWidget } from "@/components/UsageWidget";
 import { AppHeader } from "@/components/AppHeader";
 import { Skeleton } from "@/components/Skeleton";
 import { LandingPage } from "@/components/landing/LandingPage";
+import { ConfirmDeleteModal } from "@/components/ConfirmDeleteModal";
 
 interface ApplicationSummary {
   id: string;
@@ -26,6 +27,8 @@ export default function Home() {
   const { accessToken, ready, logout } = useAuth();
   const [applications, setApplications] = useState<ApplicationSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!accessToken) return;
@@ -37,6 +40,17 @@ export default function Home() {
       })
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load applications"));
   }, [accessToken]);
+
+  async function handleDelete(id: string) {
+    setDeleting(true);
+    try {
+      await authFetch(`/api/applications/${id}`, { method: "DELETE" });
+      setApplications((prev) => prev && prev.filter((a) => a.id !== id));
+      setPendingDeleteId(null);
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   if (!ready) {
     return null;
@@ -149,10 +163,17 @@ export default function Home() {
         {applications !== null && total > 0 && (
           <div className="flex flex-col gap-[9px]">
             {apps.map((app) => (
-              <button
+              <div
                 key={app.id}
-                type="button"
+                role="button"
+                tabIndex={0}
                 onClick={() => router.push(`/applications/${app.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(`/applications/${app.id}`);
+                  }
+                }}
                 className="w-full text-left bg-surface rounded-lg px-[18px] py-[15px] flex items-center justify-between gap-4 flex-wrap cursor-pointer"
               >
                 <div className="flex flex-col gap-[5px] min-w-0">
@@ -176,9 +197,20 @@ export default function Home() {
                     {app.atsScore}
                     <span className="text-xs text-text-secondary">/100</span>
                   </div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setPendingDeleteId(app.id);
+                    }}
+                    aria-label={`Delete ${app.roleTitle} application`}
+                    className="p-1 rounded-md bg-transparent text-text-secondary hover:text-red-600 dark:hover:text-red-400 cursor-pointer"
+                  >
+                    <IconTrash size={15} />
+                  </button>
                   <IconChevronRight size={15} className="text-text-secondary" />
                 </div>
-              </button>
+              </div>
             ))}
           </div>
         )}
@@ -202,6 +234,17 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      {pendingDeleteId && (
+        <ConfirmDeleteModal
+          title="Delete this application?"
+          message="This can't be undone. The application and its scored/optimized data will be permanently deleted."
+          confirmLabel="Delete"
+          loading={deleting}
+          onCancel={() => setPendingDeleteId(null)}
+          onConfirm={() => handleDelete(pendingDeleteId)}
+        />
+      )}
     </div>
   );
 }
