@@ -11,6 +11,7 @@ interface ScoringViewProps {
   optimizing: boolean;
   error: string | null;
   limitReached?: boolean;
+  onRestart: () => void;
 }
 
 const CIRCUMFERENCE = 326.7;
@@ -24,6 +25,7 @@ export function ScoringView({
   optimizing,
   error,
   limitReached = false,
+  onRestart,
 }: ScoringViewProps) {
   const displayedScore = useCountUp(0, atsScore);
   const gaugeOffset = CIRCUMFERENCE * (1 - displayedScore / 100);
@@ -116,6 +118,13 @@ export function ScoringView({
         </svg>
         {optimizing ? "Optimizing..." : "Optimize this resume"}
       </button>
+      <button
+          type="button"
+          onClick={onRestart}
+          className="w-full flex items-center justify-center gap-[9px] px-4 py-3 border border-border-hairline rounded-lg bg-transparent text-text-primary text-sm cursor-pointer"
+        >
+          Back to dashboard
+        </button>
     </div>
   );
 }

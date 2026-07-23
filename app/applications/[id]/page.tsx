@@ -35,7 +35,6 @@ export default function ApplicationDetailPage() {
   const { accessToken, ready } = useAuth();
   const [application, setApplication] = useState<ApplicationDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const [optimizing, setOptimizing] = useState(false);
   const [optimizeError, setOptimizeError] = useState<string | null>(null);
   const { usage, reload: reloadUsage } = useUsage(!!accessToken);
@@ -57,15 +56,6 @@ export default function ApplicationDetailPage() {
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load application"));
   }, [accessToken, params.id]);
 
-  async function handleDelete() {
-    setDeleting(true);
-    try {
-      await authFetch(`/api/applications/${params.id}`, { method: "DELETE" });
-      router.push("/");
-    } finally {
-      setDeleting(false);
-    }
-  }
 
   async function handleOptimize() {
     setOptimizing(true);
@@ -121,14 +111,6 @@ export default function ApplicationDetailPage() {
                 {application.companyName}
               </p>
               <h1 className="text-lg font-medium text-gray-900 dark:text-white">{application.roleTitle}</h1>
-              <button
-                type="button"
-                onClick={handleDelete}
-                disabled={deleting}
-                className="text-sm text-red-600 hover:text-red-700 disabled:opacity-50"
-              >
-                {deleting ? "Deleting..." : "Delete this application"}
-              </button>
             </div>
 
             {application.resumeData === null ? (
@@ -141,6 +123,7 @@ export default function ApplicationDetailPage() {
                 optimizing={optimizing}
                 error={optimizeError}
                 limitReached={optimizeLimitReached}
+                onRestart={() => router.push("/")}
               />
             ) : (
               <ResultView
