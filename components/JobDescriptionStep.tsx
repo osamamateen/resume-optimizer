@@ -5,6 +5,7 @@ interface JobDescriptionStepProps {
   onChange: (value: string) => void;
   onBack: () => void;
   onSubmit: () => void;
+  limitReached?: boolean;
 }
 
 export function JobDescriptionStep({
@@ -12,6 +13,7 @@ export function JobDescriptionStep({
   onChange,
   onBack,
   onSubmit,
+  limitReached = false,
 }: JobDescriptionStepProps) {
   return (
     <div className="max-w-[600px] mx-auto">
@@ -27,6 +29,11 @@ export function JobDescriptionStep({
         rows={10}
         className="w-full min-h-[90px] px-[14px] py-3 text-text-primary bg-surface border border-border-hairline rounded-lg outline-none resize-y text-[14.5px] leading-[1.55]"
       />
+      {limitReached && (
+        <p className="mt-[14px] text-[13px] text-text-secondary">
+          You&apos;ve used all 3 scores for today. Resets at midnight UTC.
+        </p>
+      )}
       <div className="flex justify-between mt-[18px]">
         <button
           type="button"
@@ -40,7 +47,7 @@ export function JobDescriptionStep({
         </button>
         <button
           type="button"
-          disabled={!jobDescription.trim()}
+          disabled={!jobDescription.trim() || limitReached}
           onClick={onSubmit}
           className="flex items-center gap-2 px-[18px] py-[9px] border border-accent rounded-lg bg-transparent text-accent text-sm font-medium disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer"
         >

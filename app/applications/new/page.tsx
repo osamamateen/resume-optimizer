@@ -11,6 +11,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
 import { useMasterResume } from "@/lib/hooks/useMasterResume";
+import { useUsage } from "@/lib/hooks/useUsage";
 
 type Step = "details" | "resume" | "jobDescription";
 
@@ -32,6 +33,8 @@ export default function NewApplicationPage() {
   const router = useRouter();
   const { accessToken, ready } = useAuth();
   const { fileName: masterResumeFileName, loaded: masterResumeLoaded } = useMasterResume(!!accessToken);
+  const { usage } = useUsage(!!accessToken);
+  const scoreLimitReached = usage !== null && usage.score.used >= usage.score.limit;
   const [step, setStep] = useState<Step>("details");
   const [companyName, setCompanyName] = useState("");
   const [roleTitle, setRoleTitle] = useState("");
@@ -122,6 +125,7 @@ export default function NewApplicationPage() {
             onChange={setJobDescription}
             onBack={() => setStep("resume")}
             onSubmit={handleSubmit}
+            limitReached={scoreLimitReached}
           />
         )}
       </main>
