@@ -7,12 +7,9 @@ A Next.js app that tailors a resume to a specific job description using an LLM (
 1. Upload a `.docx` or `.pdf` resume and paste a job description in the 3-step UI.
 2. The file is parsed into sections (heading + text per segment).
 3. The configured AI provider rewrites each section, and returns an ATS score, keyword lists, and a summary of changes.
-4. Depending on the selected mode:
-   - **In-place** (DOCX only): the original document's XML is mutated in place, preserving its original formatting.
-   - **Template**: a new PDF/DOCX is generated from scratch using a clean template.
+4. Depending on the selected template: a new PDF is generated from scratch using a clean template.
 5. The result is offered back as a download.
 
-See [CLAUDE.md](CLAUDE.md) for a detailed architecture breakdown.
 
 ## Authentication
 
@@ -20,8 +17,7 @@ Every API route requires a valid access token. Users sign up / log in with
 email and password (`/signup`, `/login`); the server returns a short-lived
 JWT access token plus a longer-lived opaque refresh token. The browser
 attaches the access token as `Authorization: Bearer <token>` on every API
-call and transparently refreshes it when it expires. See "Authentication"
-in [CLAUDE.md](CLAUDE.md) for details.
+call and transparently refreshes it when it expires.
 
 ## Getting started
 
@@ -54,5 +50,3 @@ npm run build   # Production build (Webpack)
 npm run start   # Start production server
 npm run lint    # Run ESLint
 ```
-
-The Webpack flag is intentional — the app depends on packages that don't bundle cleanly with Turbopack.
