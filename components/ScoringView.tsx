@@ -10,6 +10,7 @@ interface ScoringViewProps {
   onOptimize: () => void;
   optimizing: boolean;
   error: string | null;
+  limitReached?: boolean;
 }
 
 const CIRCUMFERENCE = 326.7;
@@ -22,6 +23,7 @@ export function ScoringView({
   onOptimize,
   optimizing,
   error,
+  limitReached = false,
 }: ScoringViewProps) {
   const displayedScore = useCountUp(0, atsScore);
   const gaugeOffset = CIRCUMFERENCE * (1 - displayedScore / 100);
@@ -97,10 +99,16 @@ export function ScoringView({
         </p>
       )}
 
+      {limitReached && (
+        <p className="text-sm text-text-secondary">
+          You&apos;ve used all 3 optimizes for today. Resets at midnight UTC.
+        </p>
+      )}
+
       <button
         type="button"
         onClick={onOptimize}
-        disabled={optimizing}
+        disabled={optimizing || limitReached}
         className="w-full flex items-center justify-center gap-[9px] px-4 py-3 border border-accent rounded-lg bg-transparent text-accent text-[15px] font-medium disabled:opacity-50 cursor-pointer"
       >
         <svg width="15" height="15" viewBox="0 0 14 14" fill="none">

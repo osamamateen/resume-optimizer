@@ -10,6 +10,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { Skeleton } from "@/components/Skeleton";
 import { useAuth } from "@/lib/auth/AuthContext";
 import { authFetch } from "@/lib/auth/authFetch";
+import { useUsage } from "@/lib/hooks/useUsage";
 import type { ResumeData } from "@/types/resume.types";
 
 interface ApplicationDetail {
@@ -37,6 +38,8 @@ export default function ApplicationDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [optimizing, setOptimizing] = useState(false);
   const [optimizeError, setOptimizeError] = useState<string | null>(null);
+  const { usage, reload: reloadUsage } = useUsage(!!accessToken);
+  const optimizeLimitReached = usage !== null && usage.optimize.used >= usage.optimize.limit;
 
   useEffect(() => {
     if (ready && !accessToken) {
@@ -78,6 +81,7 @@ export default function ApplicationDetailPage() {
         throw new Error(typeof body.error === "string" ? body.error : "Optimization failed");
       }
       setApplication(await res.json());
+      reloadUsage();
     } catch (err) {
       setOptimizeError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -136,6 +140,7 @@ export default function ApplicationDetailPage() {
                 onOptimize={handleOptimize}
                 optimizing={optimizing}
                 error={optimizeError}
+                limitReached={optimizeLimitReached}
               />
             ) : (
               <ResultView
