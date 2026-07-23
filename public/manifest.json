@@ -1,6 +1,6 @@
 {
-  "name": "Resume Optimizer",
-  "short_name": "Resume Optimizer",
+  "name": "ResumeTailor",
+  "short_name": "ResumeTailor",
   "description": "AI-driven resume optimization tailored to a job description",
   "start_url": "/",
   "display": "standalone",

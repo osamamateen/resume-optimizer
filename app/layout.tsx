@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Resume Optimizer",
+  title: "ResumeTailor",
   description: "AI-driven resume optimization tailored to a job description",
   manifest: "/manifest.json",
 };
