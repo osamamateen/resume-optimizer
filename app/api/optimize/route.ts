@@ -4,6 +4,7 @@ import { requireAuth, UnauthorizedError } from "@/lib/auth/requireAuth";
 import { prisma } from "@/lib/prisma";
 import type { SectionInput } from "@/lib/ai/types";
 import { mockResponse } from "./response";
+import { countUsageToday, recordUsage, DAILY_LIMIT } from "@/lib/services/usage.service";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -41,6 +42,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
+  const optimizeUsage = await countUsageToday(userId, "optimize");
+  if (optimizeUsage >= DAILY_LIMIT) {
+    return NextResponse.json(
+      { error: `Daily optimize limit reached (${DAILY_LIMIT}/${DAILY_LIMIT}). Try again tomorrow.` },
+      { status: 429 }
+    );
+  }
+
   const ai = getAiProvider();
   let result;
   console.time("Optimizing resume with AI");
@@ -67,6 +76,8 @@ export async function POST(req: NextRequest) {
       summaryBullets: result.summaryOfChanges.bullets,
     },
   });
+
+  await recordUsage(userId, "optimize");
 
   return NextResponse.json({
     id: updated.id,
